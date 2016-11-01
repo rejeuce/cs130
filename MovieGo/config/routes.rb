@@ -1,9 +1,11 @@
 Rails.application.routes.draw do
-  get 'login/login'
+  root 'login#login'
 
-  get 'home/home'
+  get 'login' => 'login#login'
 
-  get 'map/map'
+  get 'home' => 'home#home'
+
+  get 'map' => 'map#map'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 end
