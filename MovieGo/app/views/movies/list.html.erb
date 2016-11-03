@@ -10,6 +10,7 @@
         <h1>Movies#list</h1>
         <p>Find me in app/views/movies/list.html.erb</p>
 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
         <script>
             function get_GET_REQUEST_URL() {
                 var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
@@ -37,7 +38,20 @@
 
 
             function displayMovieShowtimes(showtimes) {
-                document.body.innerHtml += "<p>" + showtimes + "</p>"
+                console.log("hello!");
+                //document.body.innerHtml += "<p>" + showtimes + "</p>";
+
+                var result = JSON.parse(showtimes);
+                $(document.body).append("<pFound " + result.length + " movies showing!</p>");
+
+                var movies = result.hits;
+
+                $.each(result, function(index, movie) {
+                    var movieData = '<div class="tile"><img src="assets/smallberg.jpg"><br/>';
+                    movieData += movie.title;
+                    movieData += "</div>";
+                    $(document.body).append(movieData);
+                });
 
                 console.log(showtimes);
             }
