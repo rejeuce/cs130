@@ -24,7 +24,7 @@
         <p>Find me in app/views/movies/list.html.erb</p>
 
         <form>
-        Zip Code: <input id="zip" type="text" name="zipcode"> <br>
+        Zip Code: <input id="zip" type="text"> <br>
         </form>
 
         <button onclick="httpGetAsync();">Find Movies</button>
@@ -52,6 +52,7 @@
 
                 //var ZIPCODE = 90024;
                 var ZIPCODE = document.getElementById("zip");
+                console.log("Zip code from user: " + ZIPCODE);
 
                 // todo: need to validate zip code
                 if (ZIPCODE < 0 || zipcode > 99999) {
