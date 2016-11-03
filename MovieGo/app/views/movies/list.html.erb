@@ -1,2 +1,62 @@
-<h1>Movies#list</h1>
-<p>Find me in app/views/movies/list.html.erb</p>
+<!DOCTYPE html>
+<html>
+
+    <head>
+      <title>MovieGo Movies View</title>
+      <meta charset="utf-8">
+    </head>
+
+    <body onload="httpGetAsync">
+        <h1>Movies#list</h1>
+        <p>Find me in app/views/movies/list.html.erb</p>
+
+        <script>
+            function get_GET_REQUEST_URL() {
+                var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
+                var BASE_URL = "http://data.tmsapi.com/v1.1/movies/showings?startDate=";
+
+                // get the current date
+                var today = new Data();
+                var days = today.getDate();
+                var months = today.getMonth() + 1;
+                var years = today.getFullYear();
+
+                if (days < 10)
+                    days = "0" + days;
+                if (months < 10)
+                    months = "0" + months;
+
+                // format the date string as 2016-11-03
+                today = years + "-" + months + "-" + days; 
+
+                var ZIPCODE = 90024;
+
+                var FULL_URL = BASE_URL + today + "&zip=" + ZIPCODE + "&api_key=" + API_KEY;
+                return FULL_URL;
+            }
+
+
+            function displayMovieShowtimes(showtimes) {
+                document.body.innerHtml += "<p>" + showtimes + "</p>"
+
+                console.log(showtimes);
+            }
+
+            function httpGetAsync() {
+                var url = get_GET_REQUEST_URL();
+                var callback = displayMovieShowtimes;
+                var xmlHttp = new XMLHttpRequest();
+
+                xmlHttp.onreadystatechange = function() {
+                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                        callback(xmlHttp.responseText);
+                    }
+                }
+                xmlHttp.open("GET", url, true);
+                xmlHttp.send(null);
+            }
+        </script>
+
+    </body>
+
+</html>
