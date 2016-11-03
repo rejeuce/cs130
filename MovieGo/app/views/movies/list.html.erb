@@ -19,9 +19,16 @@
 
     </head>
 
-    <body onload="httpGetAsync();">
+    <body>
         <h1>Movies#list</h1>
         <p>Find me in app/views/movies/list.html.erb</p>
+
+        <form>
+        Zip Code: <input id="zip" type="text" name="zipcode"> <br>
+        </form>
+
+        <button onclick="httpGetAsync();">Find Movies</button>
+
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
         <script>
@@ -43,7 +50,14 @@
                 // format the date string as 2016-11-03
                 today = years + "-" + months + "-" + days; 
 
-                var ZIPCODE = 90024;
+                //var ZIPCODE = 90024;
+                var ZIPCODE = document.getElementById("zip");
+
+                // todo: need to validate zip code
+                if (ZIPCODE < 0 || zipcode > 99999) {
+                    alert("Bad zip code!!");
+                    ZIPCODE = 90024;
+                }
 
                 var FULL_URL = BASE_URL + today + "&zip=" + ZIPCODE + "&api_key=" + API_KEY;
                 return FULL_URL;
@@ -63,7 +77,7 @@
 
                 $.each(result, function(index, movie) {
                     var movieData = "";
-                    if (movieData % 2 == 0)
+                    if (count % 2 == 0)
                         movieData +='<div class="tile"><img src="assets/smallberg.jpg"><br/>';
                     else
                         movieData +='<div class="tile"><img src="assets/smallberg2.jpg"><br/>';
