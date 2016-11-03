@@ -2,4 +2,18 @@
 // They will automatically be included in application.scss.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+.login-body {
+  background: url('/assets/theaterBG.jpeg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 
+h1.login {
+  color: white;
+  font-size: 120px;
+  text-align: center;
+  font-family: Impact, Charcoal, sans-serif;
+  letter-spacing: 3px;
+}
