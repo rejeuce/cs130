@@ -4,6 +4,19 @@
     <head>
       <title>MovieGo Movies View</title>
       <meta charset="utf-8">
+
+      <style>
+      .tile {
+        display: inline-block;
+        border: 1px solid grey;
+        background: silver;
+        padding: 4px;
+        text-align: center;
+        font-size: 15px;
+        width: 250px;
+      }
+      </style>
+
     </head>
 
     <body onload="httpGetAsync();">
@@ -46,11 +59,18 @@
 
                 var movies = result.hits;
 
+                var count = 0;
+
                 $.each(result, function(index, movie) {
-                    var movieData = '<div class="tile"><img src="assets/smallberg.jpg"><br/>';
+                    var movieData = "";
+                    if (movieData % 2 == 0)
+                        movieData +='<div class="tile"><img src="assets/smallberg.jpg"><br/>';
+                    else
+                        movieData +='<div class="tile"><img src="assets/smallberg2.jpg"><br/>';
                     movieData += movie.title;
                     movieData += "</div>";
                     $(document.body).append(movieData);
+                    count++;
                 });
 
                 console.log(showtimes);
