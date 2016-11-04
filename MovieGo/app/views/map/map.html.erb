@@ -18,6 +18,15 @@
 <body>
 <div id="map"></div>
 <script>
+
+  function addMarker(coords, map, markerImage) {
+    var marker = new google.maps.Marker({
+      position: coords,
+      map: map,
+      icon: markerImage
+    });
+  }
+
   function initMap() {
     // latitude and longitude position
     var coords = {lat: 34.062766, lng: -118.446728};
@@ -36,11 +45,14 @@
     };
     // add a marker onto the map at the position of 'coords' on the map 'map'
     // use a custom marker icon 'markerImage'
-    var marker = new google.maps.Marker({
-      position: coords,
-      map: map,
-      icon: markerImage
-    });
+    addMarker(coords, map, markerImage);
+    addMarker({lat: 34.062636, lng:-118.447334}, map, markerImage);
+    addMarker({lat: 34.061565, lng:-118.446620}, map, markerImage);
+    // var marker = new google.maps.Marker({
+    //   position: coords,
+    //   map: map,
+    //   icon: markerImage
+    // });
   }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap" async defer></script>
