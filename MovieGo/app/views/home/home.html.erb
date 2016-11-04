@@ -18,10 +18,9 @@
 <body>
 
 <p>Use My Location <button onclick="getLocation()">OK</button> </p>
-<form action="">
-  <input type="text" name="address" value="">
-  <input type="submit" value="Search">
-</form>
+
+<p><input type="text" name="address" value="Address">
+<button onclick="convertAddress()">Search</button> </p>
 
 <p id="demo"></p>
 
@@ -68,6 +67,22 @@
 </script>
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap">
+</script>
+
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+  function convertAddress() {
+    var address = document.getElementsByName("address")[0].value;
+    var geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode({'address': address}, function (results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var lat = results[0].geometry.location.lat();
+        var long = results[0].geometry.location.lng();
+        initMap(lat, long, null);
+      }
+    });
+  }
 </script>
 
 </body>
