@@ -87,16 +87,12 @@
 
                 $.each(result, function(index, movie) {
                     var movieData = "";
-                    var imgsrc = "";
-
-                    try {
-                        imgsrc = thumbnails[movie.title];
-                    }
-                    catch (err) {
+                    var imgsrc = thumbnails[movie.title];
+              
+                    if (imgsrc == undefined)
                         imgsrc = "assets/smallberg.jpg"
-                    }
 
-                    movieData +='<div class="tile"><img src="' + imgsrc + '"><br/>';
+                    movieData +='<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
 
                     movieData += movie.title;
                     movieData += "</div>";
