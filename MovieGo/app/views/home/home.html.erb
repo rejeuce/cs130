@@ -1,17 +1,34 @@
-<!-- http://www.w3schools.com/html/html5_geolocation.asp -->
 <!DOCTYPE html>
 <html>
+<head>
+  <style>
+    #map {
+      height: 75%;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    p, form {
+      text-indent: 50px;
+    }
+  </style>
+</head>
 <body>
 
-<p>Click the button to get your coordinates.</p>
-
-<button onclick="getLocation()">Try It</button>
+<p>Use My Location <button onclick="getLocation()">OK</button> </p>
+<form action="">
+  <input type="text" name="address" value="">
+  <input type="submit" value="Search">
+</form>
 
 <p id="demo"></p>
 
+<div id="map"></div>
+
 <script>
   var x = document.getElementById("demo");
-
   function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
@@ -19,11 +36,38 @@
       x.innerHTML = "Geolocation is not supported by this browser.";
     }
   }
-
   function showPosition(position) {
-    x.innerHTML = "Latitude: " + position.coords.latitude +
-        "<br>Longitude: " + position.coords.longitude;
+    //x.innerHTML = "Latitude: " + position.coords.latitude +
+    //    "<br>Longitude: " + position.coords.longitude;
+    initMap(position.coords.latitude, position.coords.longitude, null)
   }
+</script>
+
+<script>
+  function initMap(x, y, locations) {
+    var center = {lat: x, lng: y};
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 14,
+      center: center
+    });
+    var marker, i;
+    var markers = [
+      {lat: x, lng: y},
+      {lat: x+.01, lng: y+.01}
+    ];
+    for (i = 0; i < locations; i++) {
+      markers.push(locations[i]);
+    }
+    for (i = 0; i < markers.length; i++) {
+      marker = new google.maps.Marker({
+        position: markers[i],
+        map: map
+      });
+    }
+  }
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap">
 </script>
 
 </body>
