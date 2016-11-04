@@ -1,10 +1,12 @@
 Rails.application.routes.draw do
 
-  root 'login#login'
+  root 'home#landing'
 
   get 'login' => 'login#login'
 
   get 'home' => 'home#home'
+
+  get 'home/landing' => 'home#landing'
 
   get 'map' => 'map#map'
 
