@@ -33,6 +33,14 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
         <script>
+
+            var thumbnails = new Object();
+            thumbnails["Inferno"] = "assets/inferno.jpg";
+            thumbnails["Keeping Up With the Joneses"] = "assets/kuwtj.jpg";
+            thumbnails["Jack Reacher: Never Go Back"] = "assets/jackreacher.jpg"
+            thumbnails["The Accountant"] = "assets/accountant.jpg"
+
+
             function get_GET_REQUEST_URL() {
                 var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
                 var BASE_URL = "http://data.tmsapi.com/v1.1/movies/showings?startDate=";
@@ -79,10 +87,17 @@
 
                 $.each(result, function(index, movie) {
                     var movieData = "";
-                    if (count % 2 == 0)
-                        movieData +='<div class="tile"><img src="assets/smallberg.jpg"><br/>';
-                    else
-                        movieData +='<div class="tile"><img src="assets/smallberg2.jpg"><br/>';
+                    var imgsrc = "";
+
+                    try {
+                        imgsrc = thumbnails[movie.title];
+                    }
+                    catch {
+                        imgsrc = "assets/smallberg.jpg"
+                    }
+
+                    movieData +='<div class="tile"><img src="' + imgsrc + '"><br/>';
+
                     movieData += movie.title;
                     movieData += "</div>";
                     $(document.body).append(movieData);
