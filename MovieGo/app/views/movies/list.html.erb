@@ -4,6 +4,7 @@
     <head>
       <title>MovieGo Movies View</title>
       <meta charset="utf-8">
+      <%= csrf_meta_tag %>
 
       <style>
             .tile {
@@ -51,9 +52,11 @@
             var RESPONSE_INFO = "";
 
             function makePostRequest(payload) {
+
+                var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
                 console.log("Payload: " + payload);
                 $.ajax({
-                    url: 'map',
+                    url: 'map+?authenticity_token=' + encodeURIComponent(AUTH_TOKEN),
                     type: 'POST',
                     data: JSON.stringify(payload),
                     contentType: 'application/json; charset=utf-8',
