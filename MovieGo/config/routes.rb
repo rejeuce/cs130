@@ -10,6 +10,8 @@ Rails.application.routes.draw do
 
   get 'map' => 'map#map'
 
+  post 'map' => 'map#create'
+
   get 'movies' => 'movies#list'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
