@@ -6,15 +6,16 @@
       <meta charset="utf-8">
 
       <style>
-      .tile {
-        display: inline-block;
-        border: 1px solid grey;
-        background: silver;
-        padding: 4px;
-        text-align: center;
-        font-size: 15px;
-        width: 250px;
-      }
+            .tile {
+                display: inline-block;
+                border: 1px solid grey;
+                background: silver;
+                padding: 4px;
+                text-align: center;
+                font-size: 15px;
+                width: 250px;
+            }
+
       </style>
 
     </head>
@@ -46,6 +47,33 @@
             thumbnails["Doctor Strange"] = "assets/drstrange.jpg"
             thumbnails["Trolls"] = "assets/smallberg.jpg"
             thumbnails["Hacksaw Ridge"] = "assets/hacksawridge.jpg"
+
+            var RESPONSE_INFO = "";
+
+            function makePostRequest(payload) {
+                console.log("Payload: " + payload);
+                $.ajax({
+                    url: 'map',
+                    type: 'POST',
+                    data: JSON.stringify(payload),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    async: false,
+                    success: function(msg) {
+                        alert(msg);
+                    }
+                });
+            }
+
+            function getMovieInfo(movie_index) {
+                console.log("Movie Index: " + movie_index);
+                var result = JSON.parse(RESPONSE_INFO);
+                var movieInfo = result[movie_index];
+
+                console.log("Movie Title: " + result[movie_index].title);
+
+                makePostRequest(movieInfo);
+            }
 
 
             function get_GET_REQUEST_URL() {
@@ -86,6 +114,11 @@
                 //document.body.innerHtml += "<p>" + showtimes + "</p>";
 
                 var result = JSON.parse(showtimes);
+                
+                // assign response to global variable, so we can access movie information
+                // after a button click
+                RESPONSE_INFO = showtimes;
+
                 $(document.body).append("<pFound " + result.length + " movies showing!</p>");
 
                 var movies = result.hits;
@@ -99,10 +132,13 @@
                     if (imgsrc == undefined)
                         imgsrc = "assets/smallberg.jpg"
 
-                    movieData +='<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
+                    movieData += '<button onclick="getMovieInfo(' + index + ')">'
+
+                    movieData += '<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
 
                     movieData += movie.title;
                     movieData += "</div>";
+                    movieData += "</button>"
                     $(document.body).append(movieData);
                     count++;
                 });
