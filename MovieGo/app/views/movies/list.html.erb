@@ -53,10 +53,10 @@
 
             function makePostRequest(payload) {
 
-                var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
                 console.log("Payload: " + payload);
                 $.ajax({
-                    url: 'map+?authenticity_token=' + encodeURIComponent(AUTH_TOKEN),
+                    beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+                    url: 'map',
                     type: 'POST',
                     data: JSON.stringify(payload),
                     contentType: 'application/json; charset=utf-8',
