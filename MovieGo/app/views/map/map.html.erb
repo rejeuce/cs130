@@ -68,10 +68,18 @@ Theaters showing <%= @title %>
 
     // place a marker for the user's position
     addMarker(mapCenter, map, "");
+
+    // start to draw timers for the movies by getting the movie info from the controller
+    getMovieInfo();
   }
 
 
-
+  function getMovieInfo() {
+    // get the movie info from the map controller
+    // and parse it into a JSON dictionary
+    var movieInfo = <%= @parsed_json.html_safe %>;
+    console.log("Movie Info in JS: " + JSON.stringify(movieInfo, null, 4));
+  }
 
 
   function initMap() {
@@ -90,12 +98,7 @@ Theaters showing <%= @title %>
       scaledSize: new google.maps.Size(69, 69) // he he
     };
 
-    // get the movie info from the map controller
-    // and parse it into a JSON dictionary
-    var movieInfo = '<%= @decoded_uri.to_s.html_safe %>';
-    console.log("Movie Info in JS: " + movieInfo);
-    movieInfo = JSON.parse(movieInfo);
-    console.log("JSON in JS: " + movieInfo);
+
 
     // add a marker onto the map at the position of 'coords' on the map 'map'
     // use a custom marker icon 'markerImage'
