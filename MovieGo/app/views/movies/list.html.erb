@@ -93,6 +93,7 @@
                 console.log("Movie Title: " + result[movie_index].title);
 
                 //makePostRequest(JSON.stringify(movieInfo));
+                return JSON.stringify(movieInfo);
             }
 
 
@@ -144,6 +145,7 @@
                 var movies = result.hits;
 
                 var count = 0;
+                var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
 
                 $.each(result, function(index, movie) {
                     var movieData = "";
@@ -152,10 +154,11 @@
                     if (imgsrc == undefined)
                         imgsrc = "assets/smallberg.jpg"
 
-                    movieData += '<form method="post" action="map" class="inline">'
+                    movieData += '<form method="post" action="map" class="inline">';
+                    movieData += '<input name="authenticity_token" type="hidden" value="' + encodeURIComponent(AUTH_TOKEN) + '">';
                     movieData += '<input type="hidden" name="movie_info" value="' + encodeURIComponent(getMovieInfo(index)) + '">';
 
-                    movieData += '<button type="submit" name="submit_param" value="submit_value" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
+                    movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
 
                     movieData += '<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
 
