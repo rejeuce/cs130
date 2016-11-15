@@ -17,6 +17,26 @@
                 width: 250px;
             }
 
+            .inline {
+              display: inline;
+            }
+
+            .link-button {
+              background: none;
+              border: none;
+              color: blue;
+              text-decoration: underline;
+              cursor: pointer;
+              font-size: 1em;
+              font-family: serif;
+            }
+            .link-button:focus {
+              outline: none;
+            }
+            .link-button:active {
+              color:red;
+            }
+
       </style>
 
     </head>
@@ -29,7 +49,7 @@
         <p>Find me in app/views/movies/list.html.erb</p>
 
         <form>
-        Zip Code: <input id="zip" type="text"> <br/>
+        Zip Code: <input id="zip" type="text">
         </form>
 
         <button onclick="httpGetAsync();">Find Movies</button>
@@ -100,17 +120,21 @@
                 today = years + "-" + months + "-" + days; 
 
                 //var ZIPCODE = 90024;
-                var ZIPCODE = document.getElementById("zip").value;
-                console.log("Zip code from user: " + ZIPCODE);
+                var ZIPCODE = getLocationFromInput();
 
+                var FULL_URL = BASE_URL + today + "&zip=" + ZIPCODE + "&api_key=" + API_KEY;
+                return FULL_URL;
+            }
+
+            function getLocationFromInput() {
+                var ZIPCODE = document.getElementById("zip").value;
                 // todo: need to validate zip code
                 if (ZIPCODE < 0 || ZIPCODE > 99999) {
                     alert("Bad zip code!!");
                     ZIPCODE = 90024;
                 }
 
-                var FULL_URL = BASE_URL + today + "&zip=" + ZIPCODE + "&api_key=" + API_KEY;
-                return FULL_URL;
+                return ZIPCODE;
             }
 
 
@@ -130,6 +154,7 @@
 
                 var count = 0;
                 var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
+                var location = getLocationFromInput();
 
                 $.each(result, function(index, movie) {
                     var movieData = "";
@@ -141,6 +166,8 @@
                     movieData += '<form method="post" action="map" class="inline">';
                     movieData += '<input name="authenticity_token" type="hidden" value="' + AUTH_TOKEN + '">';
                     movieData += '<input type="hidden" name="movie_info" value="' + encodeURIComponent(getMovieInfo(index)) + '">';
+
+                    movieData += '<input type="hidden" name="location" value="' + location + '">';
 
                     movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
 
