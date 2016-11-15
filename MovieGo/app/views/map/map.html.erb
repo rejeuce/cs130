@@ -26,11 +26,19 @@ Theaters showing <%= @title %>
 <script>
 
   function addMarker(coords, map, markerImage) {
-    var marker = new google.maps.Marker({
-      position: coords,
-      map: map,
-      icon: markerImage
-    });
+    if (markerImage.length == 0) {
+      var marker = new google.maps.Marker({
+        position: coords,
+        map: map
+      });
+    }
+    else {
+      var marker = new google.maps.Marker({
+        position: coords,
+        map: map,
+        icon: markerImage
+      });
+    }
   }
 
   function convertAddressToCoordinates(addie, callback) {
@@ -57,7 +65,12 @@ Theaters showing <%= @title %>
       center: mapCenter,
       zoom: 13
     });
+
+    // place a marker for the user's position
+    addMarker(mapCenter, map, "");
   }
+
+
 
 
 
@@ -79,9 +92,9 @@ Theaters showing <%= @title %>
 
     // get the movie info from the map controller
     // and parse it into a JSON dictionary
-    var movieInfo = '<%= @decoded_uri %>';
-    console.log(decodeURIComponent(movieInfo));
-    movieInfo = JSON.parse(decodeURIComponent(movieInfo));
+    var movieInfo = '<%= @decoded_uri.to_s.html_safe %>';
+    console.log("Movie Info in JS: " + movieInfo);
+    movieInfo = JSON.parse(movieInfo);
     console.log("JSON in JS: " + movieInfo);
 
     // add a marker onto the map at the position of 'coords' on the map 'map'
