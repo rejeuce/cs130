@@ -33,45 +33,42 @@ Theaters showing <%= @title %>
     });
   }
 
-  function convertAddressToCoordinates(addie) {
+  function convertAddressToCoordinates(addie, callback) {
     var address = addie;
     var geocoder = new google.maps.Geocoder();
-    var result = {lat: 34.062766, lng: -118.446728};
 
     geocoder.geocode({'address': address}, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var lati = results[0].geometry.location.lat();
-        console.log("Latitude: " + lati);
         var longi = results[0].geometry.location.lng();
-        console.log("Longitude:" + longi);
-        result = {lat: lati, lng: longi}
+        var coords = {lat: lati, lng: longi};
+        callback(coords);
       }
     });
-
-  console.log("Map Center Coords: " + JSON.stringify(result, null, 4));
-
-    return result;
   }
 
-  function initMap() {
-    // latitude and longitude position
-    // intialize to default coordinates in Westwood
-    var mapCenter = {lat: 34.062766, lng: -118.446728};
 
-    // get the map location from the user's location
-    // use the users location as the map center
-    var userLocation = '<%= @location %>';
-    console.log("User Location: " + userLocation);
-    mapCenter = convertAddressToCoordinates(userLocation);
-    console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
-
-
+  function drawMap(mapCenter) {
     // set the map to center on the 'mapCenter', and the zoom level
     // higher zoom means closer
+    console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
+
     var map = new google.maps.Map(document.getElementById('map'), {
       center: mapCenter,
       zoom: 13
     });
+  }
+
+
+
+  function initMap() {
+
+    // center the map location on the user's location
+    // use the users location as the map center
+    var userLocation = '<%= @location %>';
+    console.log("User Location: " + userLocation);
+    convertAddressToCoordinates(userLocation, drawMap);
+
 
     // the image for the marker
     // choose the correct timer image to use based on time remaining
@@ -83,14 +80,15 @@ Theaters showing <%= @title %>
     // get the movie info from the map controller
     // and parse it into a JSON dictionary
     var movieInfo = '<%= @decoded_uri %>';
+    console.log(decodeURIComponent(movieInfo));
     movieInfo = JSON.parse(decodeURIComponent(movieInfo));
     console.log("JSON in JS: " + movieInfo);
 
     // add a marker onto the map at the position of 'coords' on the map 'map'
     // use a custom marker icon 'markerImage'
-    addMarker(coords, map, markerImage);
-    addMarker({lat: 34.062636, lng:-118.447334}, map, markerImage);
-    addMarker({lat: 34.061565, lng:-118.446620}, map, markerImage);
+    //addMarker(coords, map, markerImage);
+    //addMarker({lat: 34.062636, lng:-118.447334}, map, markerImage);
+    //addMarker({lat: 34.061565, lng:-118.446620}, map, markerImage);
     // var marker = new google.maps.Marker({
     //   position: coords,
     //   map: map,
