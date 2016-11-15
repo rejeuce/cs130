@@ -33,22 +33,54 @@ Theaters showing <%= @title.inspect %>
     });
   }
 
+  function convertAddressToCoordinates(addie) {
+    var address = addie;
+    var geocoder = new google.maps.Geocoder();
+    var result = {lat: 34.062766, lng: -118.446728};
+
+    geocoder.geocode({'address': address}, function (results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var lati = results[0].geometry.location.lat();
+        var longi = results[0].geometry.location.lng();
+        result = {lat: lati, lng: longi}
+      }
+    });
+
+    return result;
+  }
+
   function initMap() {
     // latitude and longitude position
-    var coords = {lat: 34.062766, lng: -118.446728};
+    // intialize to default coordinates in Westwood
+    var mapCenter = {lat: 34.062766, lng: -118.446728};
 
-    // set the map to center on the 'coords', and the zoom level to 16
+    // get the map location from the user's location
+    // use the users location as the map center
+    var userLocation = <%= @location.inspect %>;
+    mapCenter = convertAddressToCoordinates(userLocation);
+
+    // set the map to center on the 'mapCenter', and the zoom level
     // higher zoom means closer
     var map = new google.maps.Map(document.getElementById('map'), {
-      center: coords,
-      zoom: 18
+      center: mapCenter,
+      zoom: 13
     });
+
     // the image for the marker
     // choose the correct timer image to use based on time remaining
     var markerImage = {
       url: "assets/15mintimer.png",
       scaledSize: new google.maps.Size(69, 69) // he he
     };
+
+    // get the movie info from the map controller
+    // and parse it into a JSON dictionary
+    var movieInfo = <%= @location.decoded_uri %>;
+    movieInfo = JSON.parse(movieInfo);
+
+    
+
+
     // add a marker onto the map at the position of 'coords' on the map 'map'
     // use a custom marker icon 'markerImage'
     addMarker(coords, map, markerImage);
