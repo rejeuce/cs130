@@ -155,7 +155,7 @@
                         imgsrc = "assets/smallberg.jpg"
 
                     movieData += '<form method="post" action="map" class="inline">';
-                    movieData += '<input name="authenticity_token" type="hidden" value="' + encodeURIComponent(AUTH_TOKEN) + '">';
+                    movieData += '<input name="authenticity_token" type="hidden" value="' + AUTH_TOKEN + '">';
                     movieData += '<input type="hidden" name="movie_info" value="' + encodeURIComponent(getMovieInfo(index)) + '">';
 
                     movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
