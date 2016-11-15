@@ -41,10 +41,14 @@ Theaters showing <%= @title %>
     geocoder.geocode({'address': address}, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var lati = results[0].geometry.location.lat();
+        console.log("Latitude: " + lati);
         var longi = results[0].geometry.location.lng();
+        console.log("Longitude:" + longi);
         result = {lat: lati, lng: longi}
       }
     });
+
+  console.log("Map Center Coords: " + JSON.stringify(result, null, 4));
 
     return result;
   }
@@ -59,7 +63,7 @@ Theaters showing <%= @title %>
     var userLocation = '<%= @location %>';
     console.log("User Location: " + userLocation);
     mapCenter = convertAddressToCoordinates(userLocation);
-    console.log("Map Center Coords: " + mapCenter);
+    console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
 
 
     // set the map to center on the 'mapCenter', and the zoom level
@@ -79,7 +83,7 @@ Theaters showing <%= @title %>
     // get the movie info from the map controller
     // and parse it into a JSON dictionary
     var movieInfo = '<%= @decoded_uri %>';
-    movieInfo = JSON.parse(movieInfo);
+    movieInfo = JSON.parse(decodeURIComponent(movieInfo));
     console.log("JSON in JS: " + movieInfo);
 
     // add a marker onto the map at the position of 'coords' on the map 'map'
