@@ -77,9 +77,9 @@ Theaters showing <%= @title %>
   function getMovieInfo() {
     // get the movie info from the map controller
     // and parse it into a JSON dictionary
-    var movieInfo = '<%= escape_javascript(raw @parsed_json) %>';
+    var movieInfo = '<%= raw @showtimes.to_json %>';
     movieInfo = JSON.parse(movieInfo);
-    console.log("Movie Info in JS: " + JSON.stringify(movieInfo, null, 4));
+    console.log("Showtimes in JS: " + JSON.stringify(movieInfo, null, 4));
   }
 
 

@@ -17,6 +17,8 @@ class MapController < ApplicationController
 
     @location = params[:location]
 
+    @showtimes = @parsed_json['showtimes']
+
     render "map"
   end
 
