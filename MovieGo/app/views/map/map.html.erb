@@ -59,6 +59,8 @@ Theaters showing <%= @title %>
     var userLocation = '<%= @location %>';
     console.log("User Location: " + userLocation);
     mapCenter = convertAddressToCoordinates(userLocation);
+    console.log("Map Center Coords: " + mapCenter);
+
 
     // set the map to center on the 'mapCenter', and the zoom level
     // higher zoom means closer
@@ -76,10 +78,9 @@ Theaters showing <%= @title %>
 
     // get the movie info from the map controller
     // and parse it into a JSON dictionary
-    var movieInfo = <%= @parsed_json %>;
+    var movieInfo = '<%= @decoded_uri %>';
+    movieInfo = JSON.parse(movieInfo);
     console.log("JSON in JS: " + movieInfo);
-
-
 
     // add a marker onto the map at the position of 'coords' on the map 'map'
     // use a custom marker icon 'markerImage'
