@@ -88,17 +88,19 @@ Theaters showing <%= @title %>
       addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
     }
     else {
-      var geocoder = new google.maps.Geocoder();
-      geocoder.geocode({'address': theatreName}, function (results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-          var lati = results[0].geometry.location.lat();
-          var longi = results[0].geometry.location.lng();
-          var coords = {lat: lati, lng: longi};
+      var service = new google.maps.places.PlacesService(map);
+      service.textSearch({'query': theatreName}, function (results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            if (results.length > 0) {
+            var lati = results[0].geometry.location.lat();
+            var longi = results[0].geometry.location.lng();
+            var coords = {lat: lati, lng: longi};
 
-          console.log(JSON.stringify(coords, null, 4));
-          if (alreadyAdded.indexOf(theatreID) == -1) {
-            addMarker(coords, map, 15, theatreName);
-            alreadyAdded.push(theatreID);
+            console.log(JSON.stringify(coords, null, 4));
+            if (alreadyAdded.indexOf(theatreID) == -1) {
+              addMarker(coords, map, 15, theatreName);
+              alreadyAdded.push(theatreID);
+            }
           }
         }
 
