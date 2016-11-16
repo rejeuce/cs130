@@ -142,7 +142,7 @@ Theaters showing <%= @title %>
     var timeRemaining = (showtimeHours - hours) * 60 + (showtimeMinutes - minutes);
     console.log("Time Remaining: " + timeRemaining);
 
-    if (alreadyAdded.indexOf(theatreID) >= 0) {
+    if (alreadyAdded.indexOf(theatreID) >= 0 || timeRemaining <= 0) {
       addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
     }
     else {
