@@ -36,10 +36,16 @@ Theaters showing <%= @title %>
       scaledSize: new google.maps.Size(69, 69) // he he
     };
 
+    var userLocationMarker = {
+      url: "assets/youarehere.png",
+      scaledSize: new google.maps.Size(69, 69) // he he
+    };
+
     if (timeRemaining == -1) {
       var marker = new google.maps.Marker({
         position: coords,
-        map: map
+        map: map,
+        icon: userLocationMarker
       });
     }
     else {
@@ -141,21 +147,11 @@ Theaters showing <%= @title %>
 
 
   function initMap() {
-
     // center the map location on the user's location
     // use the users location as the map center
     var userLocation = '<%= @location %>';
     console.log("User Location: " + userLocation);
     convertAddressToCoordinates(userLocation, drawMap);
-
-
-    // the image for the marker
-    // choose the correct timer image to use based on time remaining
-    var markerImage = {
-      url: "assets/15mintimer.png",
-      scaledSize: new google.maps.Size(69, 69) // he he
-    };
-
   }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap&libraries=places" async defer></script>
