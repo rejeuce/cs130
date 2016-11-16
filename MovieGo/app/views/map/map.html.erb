@@ -71,11 +71,10 @@ Theaters showing <%= @title %>
       return;
 
     var showtime = showtimes[count];
-    var theatreName = showtime["theatre"]["name"];
+    var theatreName = (showtime["theatre"]["name"]).replace(/\d+$/, "");
     var theatreID = showtime["theatre"]["id"];
     var movieTime = showtime["dateTime"];
     var geocoder = new google.maps.Geocoder();
-
 
     console.log(showtime);
     console.log("Count: " + count);
@@ -95,9 +94,9 @@ Theaters showing <%= @title %>
           addMarker(coords, map, 15);
           alreadyAdded.push(theatreID);
         }
-
-        addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
       }
+
+      addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
     });
   }
 
