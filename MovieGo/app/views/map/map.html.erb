@@ -31,9 +31,49 @@ Theaters showing <%= @title %>
 
     // the image for the marker
     // choose the correct timer image to use based on time remaining
+
+    var url = "assets/";
+
+    if (timeRemaining <= 5) {
+      url += "5mintimer.png";
+    }
+    else if (timeRemaining <= 10) {
+      url += "10mintimer.png";
+    }
+    else if (timeRemaining <= 15) {
+      url += "15mintimer.png";
+    }
+    else if (timeRemaining <= 20) {
+      url += "20mintimer.png";
+    }
+    else if (timeRemaining <= 25) {
+      url += "25mintimer.png";
+    }
+    else if (timeRemaining <= 30) {
+      url += "30mintimer.png";
+    }
+    else if (timeRemaining <= 35) {
+      url += "35mintimer.png";
+    }
+    else if (timeRemaining <= 40) {
+      url += "40mintimer.png";
+    }
+    else if (timeRemaining <= 45) {
+      url += "45mintimer.png";
+    }
+    else if (timeRemaining <= 50) {
+      url += "50mintimer.png";
+    }
+    else if (timeRemaining <= 55) {
+      url += "55mintimer.png";
+    }
+    else {
+      url += "60mintimer.png";
+    }
+
     var markerImage = {
-      url: "assets/15mintimer.png",
-      scaledSize: new google.maps.Size(69, 69) // he he
+      url: url,
+      scaledSize: new google.maps.Size(75, 75)
     };
 
     var userLocationMarker = {
@@ -56,7 +96,7 @@ Theaters showing <%= @title %>
       });
     }
 
-    console.log("Adding marker for " + theatreName + " add coords " + JSON.stringify(coords, null, 4));
+    console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
   }
 
   function convertAddressToCoordinates(addie, callback) {
@@ -90,6 +130,18 @@ Theaters showing <%= @title %>
     console.log(theatreID);
     console.log(movieTime);
 
+    var currentDate = new Date();
+    var hours = currentDate.getHours();
+    var minutes = currentDate.getMinutes();
+
+    var showtimeHours = (((showtime.split("T"))[1]).split(":"))[0];
+    console.log("Showtime Hours: " + showtimeHours);
+    var showtimeMinutes = (((showtime.split("T"))[1]).split(":"))[1];
+    console.log("Showtime Minutes: " + showtimeMinutes);
+
+    var timeRemaining = (showtimeHours - hours) * 60 + (showtimeMinutes - minutes);
+    console.log("Time Remaining: " + timeRemaining);
+
     if (alreadyAdded.indexOf(theatreID) >= 0) {
       addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
     }
@@ -104,7 +156,7 @@ Theaters showing <%= @title %>
 
             console.log(JSON.stringify(coords, null, 4));
             if (alreadyAdded.indexOf(theatreID) == -1) {
-              addMarker(coords, map, 15, theatreName);
+              addMarker(coords, map, timeRemaining, theatreName);
               alreadyAdded.push(theatreID);
             }
           }
