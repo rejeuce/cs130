@@ -76,11 +76,21 @@ Theaters showing <%= @title %>
     var movieTime = showtime["dateTime"];
     var geocoder = new google.maps.Geocoder();
 
+
+    console.log(showtime);
+    console.log("Count: " + count);
+    console.log(alreadyAdded);
+    console.log(theatreName);
+    console.log(theatreID);
+    console.log(movieTime);
+
     geocoder.geocode({'address': theatreName}, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var lati = results[0].geometry.location.lat();
         var longi = results[0].geometry.location.lng();
         var coords = {lat: lati, lng: longi};
+
+        console.log(JSON.stringify(coords, null, 4));
         if (alreadyAdded.indexOf(theatreID) == -1) {
           addMarker(coords, map, 15);
           alreadyAdded.push(theatreID);
