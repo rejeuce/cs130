@@ -25,8 +25,18 @@ Theaters showing <%= @title %>
 <div id="map"></div>
 <script>
 
-  function addMarker(coords, map, markerImage) {
-    if (markerImage.length == 0) {
+  function addMarker(coords, map, timeRemaining) {
+    // add a marker onto the map at the position of 'coords' on the map 'map'
+    // use a custom marker icon 'markerImage'
+
+    // the image for the marker
+    // choose the correct timer image to use based on time remaining
+    var markerImage = {
+      url: "assets/15mintimer.png",
+      scaledSize: new google.maps.Size(69, 69) // he he
+    };
+
+    if (timeRemaining == -1) {
       var marker = new google.maps.Marker({
         position: coords,
         map: map
@@ -55,6 +65,32 @@ Theaters showing <%= @title %>
     });
   }
 
+  function addTheatresToMap(map, showtimes, count, alreadyAdded) {
+
+    if (count == showtimes.length)
+      return;
+
+    var showtime = showtimes[count];
+    var theatreName = showtime["theatre"]["name"];
+    var theatreID = showtime["theatre"]["id"];
+    var movieTime = showtime["dateTime"];
+    var geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode({'address': theatreName}, function (results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var lati = results[0].geometry.location.lat();
+        var longi = results[0].geometry.location.lng();
+        var coords = {lat: lati, lng: longi};
+        if (alreadyAdded.indexOf(theatreID) == -1) {
+          addMarker(coords, map, 15);
+          alreadyAdded.push(theatreID);
+        }
+
+        addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
+      }
+    });
+  }
+
 
   function drawMap(mapCenter) {
     // set the map to center on the 'mapCenter', and the zoom level
@@ -67,19 +103,22 @@ Theaters showing <%= @title %>
     });
 
     // place a marker for the user's position
-    addMarker(mapCenter, map, "");
+    addMarker(mapCenter, map, -1);
 
     // start to draw timers for the movies by getting the movie info from the controller
-    getMovieInfo();
+    getMovieInfo(map);
   }
 
 
-  function getMovieInfo() {
+  function getMovieInfo(map) {
     // get the movie info from the map controller
     // and parse it into a JSON dictionary
-    var movieInfo = '<%= raw @showtimes.to_json %>';
-    movieInfo = JSON.parse(movieInfo);
-    console.log("Showtimes in JS: " + JSON.stringify(movieInfo, null, 4));
+    var showtimes = '<%= raw @showtimes.to_json %>';
+    showtimes = JSON.parse(showtimes);
+    console.log("Showtimes in JS: " + JSON.stringify(showtimes, null, 4));
+
+    var alreadyAdded = [];
+    addTheatresToMap(map, showtimes, 0, alreadyAdded);
   }
 
 
@@ -99,18 +138,6 @@ Theaters showing <%= @title %>
       scaledSize: new google.maps.Size(69, 69) // he he
     };
 
-
-
-    // add a marker onto the map at the position of 'coords' on the map 'map'
-    // use a custom marker icon 'markerImage'
-    //addMarker(coords, map, markerImage);
-    //addMarker({lat: 34.062636, lng:-118.447334}, map, markerImage);
-    //addMarker({lat: 34.061565, lng:-118.446620}, map, markerImage);
-    // var marker = new google.maps.Marker({
-    //   position: coords,
-    //   map: map,
-    //   icon: markerImage
-    // });
   }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap" async defer></script>
