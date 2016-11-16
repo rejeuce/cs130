@@ -25,7 +25,7 @@ Theaters showing <%= @title %>
 <div id="map"></div>
 <script>
 
-  function addMarker(coords, map, timeRemaining) {
+  function addMarker(coords, map, timeRemaining, theatreName="") {
     // add a marker onto the map at the position of 'coords' on the map 'map'
     // use a custom marker icon 'markerImage'
 
@@ -49,6 +49,8 @@ Theaters showing <%= @title %>
         icon: markerImage
       });
     }
+
+    console.log("Adding marker for " + theatreName + " add coords " + JSON.stringify(coords, null, 4));
   }
 
   function convertAddressToCoordinates(addie, callback) {
@@ -74,7 +76,6 @@ Theaters showing <%= @title %>
     var theatreName = (showtime["theatre"]["name"]).replace(/\d+$/, "");
     var theatreID = showtime["theatre"]["id"];
     var movieTime = showtime["dateTime"];
-    var geocoder = new google.maps.Geocoder();
 
     console.log(showtime);
     console.log("Count: " + count);
@@ -83,21 +84,27 @@ Theaters showing <%= @title %>
     console.log(theatreID);
     console.log(movieTime);
 
-    geocoder.geocode({'address': theatreName}, function (results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        var lati = results[0].geometry.location.lat();
-        var longi = results[0].geometry.location.lng();
-        var coords = {lat: lati, lng: longi};
-
-        console.log(JSON.stringify(coords, null, 4));
-        if (alreadyAdded.indexOf(theatreID) == -1) {
-          addMarker(coords, map, 15);
-          alreadyAdded.push(theatreID);
-        }
-      }
-
+    if (alreadyAdded.indexOf(theatreID) >= 0) {
       addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
-    });
+    }
+    else {
+      var geocoder = new google.maps.Geocoder();
+      geocoder.geocode({'address': theatreName}, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var lati = results[0].geometry.location.lat();
+          var longi = results[0].geometry.location.lng();
+          var coords = {lat: lati, lng: longi};
+
+          console.log(JSON.stringify(coords, null, 4));
+          if (alreadyAdded.indexOf(theatreID) == -1) {
+            addMarker(coords, map, 15, theatreName);
+            alreadyAdded.push(theatreID);
+          }
+        }
+
+        addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
+      });
+    }
   }
 
 
