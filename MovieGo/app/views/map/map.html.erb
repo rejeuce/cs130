@@ -134,9 +134,9 @@ Theaters showing <%= @title %>
     var hours = currentDate.getHours();
     var minutes = currentDate.getMinutes();
 
-    var showtimeHours = (((showtime.split("T"))[1]).split(":"))[0];
+    var showtimeHours = (((movieTime.split("T"))[1]).split(":"))[0];
     console.log("Showtime Hours: " + showtimeHours);
-    var showtimeMinutes = (((showtime.split("T"))[1]).split(":"))[1];
+    var showtimeMinutes = (((movieTime.split("T"))[1]).split(":"))[1];
     console.log("Showtime Minutes: " + showtimeMinutes);
 
     var timeRemaining = (showtimeHours - hours) * 60 + (showtimeMinutes - minutes);
