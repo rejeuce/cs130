@@ -28,21 +28,24 @@
     function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtime, tickets) {
       var movieName = '<%= @title %>';
       var rating = '<%= @rating %>';
+      rating = " " + rating + " ";
       var year = '<%= @year %>';
       var genre = '<%= raw @genres.to_json %>';
       genre = JSON.parse(genre);
       var runtime = '<%= @runtime %>';
       var description = '<%= @description %>';
 
-
       var content = '<div id="content">' +
-      '<h1 id="firstHeading" class="firstHeading>' + movieName + '</h1>' +
+      '<h1>' + movieName + '</h1>' +
       '<div id="bodyContent">' +
       '<p><span style="border: 1px solid grey">' + rating + '</span> | ' + 
       year + " | " +
       genre.join("/") + " | " +
       runtime +
-      '</p></br>' + 
+      '</p>' +
+      '<p>Showing at ' + theatreName + ' at ' + showtime + '</p>' +
+      '<p id="timer">Time Remaining: ' + timeRemaining + '</p>' +
+      '<a href="' + tickets + '" target="_blank" style="color: green">Buy Tickets Now!</a>' +
       '<p>' + description + "</p>" +
       '</div>' +
       '</div>';
