@@ -18,6 +18,13 @@ class MapController < ApplicationController
     @location = params[:location]
 
     @showtimes = @parsed_json['showtimes']
+    @description = @parsed_json['longDescription']
+    @genres = @parsed_json['genres']
+    @cast = @parsed_json['topCast']
+    @director = @parsed_json['directors']
+    @rating = @parsed_json['ratings']['code']
+    @year = @parsed_json['releaseYear']
+    @runtime = @parsed_json['runTime']
 
     render "map"
   end
