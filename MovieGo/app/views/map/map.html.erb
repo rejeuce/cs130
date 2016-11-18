@@ -3,209 +3,227 @@
 
 <!DOCTYPE html>
 <html>
-<head>
-  <title>MovieGo Map View</title>
-  <meta name="viewport" content="initial-scale=1.0">
-  <meta charset="utf-8">
-  <style>
-    #map {
-      height: 100%;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-  </style>
-</head>
-<body>
-<h2 style="color:black;">
-Theaters showing <%= @title %>
-</h1>
-<div id="map"></div>
-<script>
-
-  function addMarker(coords, map, timeRemaining, theatreName="") {
-    // add a marker onto the map at the position of 'coords' on the map 'map'
-    // use a custom marker icon 'markerImage'
-
-    // the image for the marker
-    // choose the correct timer image to use based on time remaining
-
-    var url = "assets/";
-
-    if (timeRemaining <= 5) {
-      url += "5mintimer.png";
-    }
-    else if (timeRemaining <= 10) {
-      url += "10mintimer.png";
-    }
-    else if (timeRemaining <= 15) {
-      url += "15mintimer.png";
-    }
-    else if (timeRemaining <= 20) {
-      url += "20mintimer.png";
-    }
-    else if (timeRemaining <= 25) {
-      url += "25mintimer.png";
-    }
-    else if (timeRemaining <= 30) {
-      url += "30mintimer.png";
-    }
-    else if (timeRemaining <= 35) {
-      url += "35mintimer.png";
-    }
-    else if (timeRemaining <= 40) {
-      url += "40mintimer.png";
-    }
-    else if (timeRemaining <= 45) {
-      url += "45mintimer.png";
-    }
-    else if (timeRemaining <= 50) {
-      url += "50mintimer.png";
-    }
-    else if (timeRemaining <= 55) {
-      url += "55mintimer.png";
-    }
-    else {
-      url += "60mintimer.png";
-    }
-
-    var markerImage = {
-      url: url,
-      scaledSize: new google.maps.Size(75, 75)
-    };
-
-    var userLocationMarker = {
-      url: "assets/youarehere.png",
-      scaledSize: new google.maps.Size(41, 69) // he he
-    };
-
-    if (timeRemaining == -1) {
-      var marker = new google.maps.Marker({
-        position: coords,
-        map: map,
-        icon: userLocationMarker
-      });
-    }
-    else {
-      var marker = new google.maps.Marker({
-        position: coords,
-        map: map,
-        icon: markerImage
-      });
-    }
-
-    console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
-  }
-
-  function convertAddressToCoordinates(addie, callback) {
-    var address = addie;
-    var geocoder = new google.maps.Geocoder();
-
-    geocoder.geocode({'address': address}, function (results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        var lati = results[0].geometry.location.lat();
-        var longi = results[0].geometry.location.lng();
-        var coords = {lat: lati, lng: longi};
-        callback(coords);
+  <head>
+    <title>MovieGo Map View</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      #map {
+        height: 100%;
       }
-    });
-  }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+  <h2 style="color:black;">
+  Theaters showing <%= @title %>
+  </h2>
+  <div id="map"></div>
+  <script>
 
-  function addTheatresToMap(map, showtimes, count, alreadyAdded) {
-
-    if (count == showtimes.length)
-      return;
-
-    var showtime = showtimes[count];
-    var theatreName = (showtime["theatre"]["name"]).replace(/\d+$/, "");
-    var theatreID = showtime["theatre"]["id"];
-    var movieTime = showtime["dateTime"];
-
-    console.log(showtime);
-    console.log("Count: " + count);
-    console.log(alreadyAdded);
-    console.log(theatreName);
-    console.log(theatreID);
-    console.log(movieTime);
-
-    var currentDate = new Date();
-    var hours = currentDate.getHours();
-    var minutes = currentDate.getMinutes();
-
-    var showtimeHours = (((movieTime.split("T"))[1]).split(":"))[0];
-    console.log("Showtime Hours: " + showtimeHours);
-    var showtimeMinutes = (((movieTime.split("T"))[1]).split(":"))[1];
-    console.log("Showtime Minutes: " + showtimeMinutes);
-
-    var timeRemaining = (showtimeHours - hours) * 60 + (showtimeMinutes - minutes);
-    console.log("Time Remaining: " + timeRemaining);
-
-    if (alreadyAdded.indexOf(theatreID) >= 0 || timeRemaining <= 0) {
-      addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
+    function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtime) {
+      var movieName = '\"<%= @title %>\"';
+      var content = '<div id="content">' + +
+      '<h1 id="firstHeading" class="firstHeading>' + movieName + '</h1>' +
+      '<div id="bodyContent">' +
+      '</div>' +
+      '</div>';
+      return content;
     }
-    else {
-      var service = new google.maps.places.PlacesService(map);
-      service.textSearch({'query': theatreName}, function (results, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
-            if (results.length > 0) {
-            var lati = results[0].geometry.location.lat();
-            var longi = results[0].geometry.location.lng();
-            var coords = {lat: lati, lng: longi};
 
-            console.log(JSON.stringify(coords, null, 4));
-            if (alreadyAdded.indexOf(theatreID) == -1) {
-              addMarker(coords, map, timeRemaining, theatreName);
-              alreadyAdded.push(theatreID);
+    function addMarker(coords, map, timeRemaining, theatreName="") {
+      // add a marker onto the map at the position of 'coords' on the map 'map'
+      // use a custom marker icon 'markerImage'
+
+      // the image for the marker
+      // choose the correct timer image to use based on time remaining
+
+      var url = "assets/";
+
+      if (timeRemaining <= 5) {
+        url += "5mintimer.png";
+      }
+      else if (timeRemaining <= 10) {
+        url += "10mintimer.png";
+      }
+      else if (timeRemaining <= 15) {
+        url += "15mintimer.png";
+      }
+      else if (timeRemaining <= 20) {
+        url += "20mintimer.png";
+      }
+      else if (timeRemaining <= 25) {
+        url += "25mintimer.png";
+      }
+      else if (timeRemaining <= 30) {
+        url += "30mintimer.png";
+      }
+      else if (timeRemaining <= 35) {
+        url += "35mintimer.png";
+      }
+      else if (timeRemaining <= 40) {
+        url += "40mintimer.png";
+      }
+      else if (timeRemaining <= 45) {
+        url += "45mintimer.png";
+      }
+      else if (timeRemaining <= 50) {
+        url += "50mintimer.png";
+      }
+      else if (timeRemaining <= 55) {
+        url += "55mintimer.png";
+      }
+      else {
+        url += "60mintimer.png";
+      }
+
+      var markerImage = {
+        url: url,
+        scaledSize: new google.maps.Size(75, 75)
+      };
+
+      var userLocationMarker = {
+        url: "assets/youarehere.png",
+        scaledSize: new google.maps.Size(41, 69) // he he
+      };
+
+      if (timeRemaining == -1) {
+        var marker = new google.maps.Marker({
+          position: coords,
+          map: map,
+          icon: userLocationMarker
+        });
+      }
+      else {
+        var marker = new google.maps.Marker({
+          position: coords,
+          map: map,
+          icon: markerImage
+        });
+
+        var infowindow = new google.maps.InfoWindow({
+          content: getInfoWindowHTML(timeRemaining, theatreName, coords, showtime);
+        });
+
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+      }
+
+      console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
+    }
+
+    function convertAddressToCoordinates(addie, callback) {
+      var address = addie;
+      var geocoder = new google.maps.Geocoder();
+
+      geocoder.geocode({'address': address}, function (results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var lati = results[0].geometry.location.lat();
+          var longi = results[0].geometry.location.lng();
+          var coords = {lat: lati, lng: longi};
+          callback(coords);
+        }
+      });
+    }
+
+    function addTheatresToMap(map, showtimes, count, alreadyAdded) {
+
+      if (count == showtimes.length)
+        return;
+
+      var showtime = showtimes[count];
+      var theatreName = (showtime["theatre"]["name"]).replace(/\d+$/, "");
+      var theatreID = showtime["theatre"]["id"];
+      var movieTime = showtime["dateTime"];
+
+      console.log(showtime);
+      console.log("Count: " + count);
+      console.log(alreadyAdded);
+      console.log(theatreName);
+      console.log(theatreID);
+      console.log(movieTime);
+
+      var currentDate = new Date();
+      var hours = currentDate.getHours();
+      var minutes = currentDate.getMinutes();
+
+      var showtimeHours = (((movieTime.split("T"))[1]).split(":"))[0];
+      console.log("Showtime Hours: " + showtimeHours);
+      var showtimeMinutes = (((movieTime.split("T"))[1]).split(":"))[1];
+      console.log("Showtime Minutes: " + showtimeMinutes);
+
+      var timeRemaining = (showtimeHours - hours) * 60 + (showtimeMinutes - minutes);
+      console.log("Time Remaining: " + timeRemaining);
+
+      if (alreadyAdded.indexOf(theatreID) >= 0 || timeRemaining <= 0) {
+        addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
+      }
+      else {
+        var service = new google.maps.places.PlacesService(map);
+        service.textSearch({'query': theatreName}, function (results, status) {
+          if (status == google.maps.places.PlacesServiceStatus.OK) {
+              if (results.length > 0) {
+              var lati = results[0].geometry.location.lat();
+              var longi = results[0].geometry.location.lng();
+              var coords = {lat: lati, lng: longi};
+
+              console.log(JSON.stringify(coords, null, 4));
+              if (alreadyAdded.indexOf(theatreID) == -1) {
+                addMarker(coords, map, timeRemaining, theatreName, movieTime);
+                alreadyAdded.push(theatreID);
+              }
             }
           }
-        }
 
-        addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
-      });
+          addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
+        });
+      }
     }
-  }
 
 
-  function drawMap(mapCenter) {
-    // set the map to center on the 'mapCenter', and the zoom level
-    // higher zoom means closer
-    console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
+    function drawMap(mapCenter) {
+      // set the map to center on the 'mapCenter', and the zoom level
+      // higher zoom means closer
+      console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
 
-    var map = new google.maps.Map(document.getElementById('map'), {
-      center: mapCenter,
-      zoom: 13
-    });
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: mapCenter,
+        zoom: 13
+      });
 
-    // place a marker for the user's position
-    addMarker(mapCenter, map, -1);
+      // place a marker for the user's position
+      addMarker(mapCenter, map, -1, "User's Location", "00:00");
 
-    // start to draw timers for the movies by getting the movie info from the controller
-    getMovieInfo(map);
-  }
-
-
-  function getMovieInfo(map) {
-    // get the movie info from the map controller
-    // and parse it into a JSON dictionary
-    var showtimes = '<%= raw @showtimes.to_json %>';
-    showtimes = JSON.parse(showtimes);
-    console.log("Showtimes in JS: " + JSON.stringify(showtimes, null, 4));
-
-    var alreadyAdded = [];
-    addTheatresToMap(map, showtimes, 0, alreadyAdded);
-  }
+      // start to draw timers for the movies by getting the movie info from the controller
+      getMovieInfo(map);
+    }
 
 
-  function initMap() {
-    // center the map location on the user's location
-    // use the users location as the map center
-    var userLocation = '<%= @location %>';
-    console.log("User Location: " + userLocation);
-    convertAddressToCoordinates(userLocation, drawMap);
-  }
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap&libraries=places" async defer></script>
-</body>
+    function getMovieInfo(map) {
+      // get the movie info from the map controller
+      // and parse it into a JSON dictionary
+      var showtimes = '<%= raw @showtimes.to_json %>';
+      showtimes = JSON.parse(showtimes);
+      console.log("Showtimes in JS: " + JSON.stringify(showtimes, null, 4));
+
+      var alreadyAdded = [];
+      addTheatresToMap(map, showtimes, 0, alreadyAdded);
+    }
+
+
+    function initMap() {
+      // center the map location on the user's location
+      // use the users location as the map center
+      var userLocation = '<%= @location %>';
+      console.log("User Location: " + userLocation);
+      convertAddressToCoordinates(userLocation, drawMap);
+    }
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap&libraries=places" async defer></script>
+  </body>
 </html>
