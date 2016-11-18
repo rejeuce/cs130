@@ -22,7 +22,7 @@ class MapController < ApplicationController
     @genres = @parsed_json['genres']
     @cast = @parsed_json['topCast']
     @director = @parsed_json['directors']
-    @rating = @parsed_json['ratings']['code']
+    @rating = @parsed_json['ratings'][0]['code']
     @year = @parsed_json['releaseYear']
     @runtime = @parsed_json['runTime']
 
