@@ -36,17 +36,17 @@
       var description = '<%= @description %>';
 
       var content = '<div id="content">' +
-      '<h1>' + movieName + '</h1>' +
+      '<h1> style="color:black;"' + movieName + '</h1>' +
       '<div id="bodyContent">' +
-      '<p><span style="border: 1px solid grey">' + rating + '</span> | ' + 
+      '<p><span style="border: 1px solid grey">' + rating + '</span> ' + 
       year + " | " +
       genre.join("/") + " | " +
       runtime +
       '</p>' +
       '<p>Showing at ' + theatreName + ' at ' + showtime + '</p>' +
-      '<p id="timer">Time Remaining: ' + timeRemaining + '</p>' +
-      '<a href="' + tickets + '" target="_blank" style="color: green">Buy Tickets Now!</a>' +
-      '<p>' + description + "</p>" +
+      '<a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;">Buy Tickets Now!</a>' +
+      '<p id="timer">Time Remaining: ' + timeRemaining + ' minutes</p>' +
+      '<p><i>' + description + "</i></p>" +
       '</div>' +
       '</div>';
       console.log(content);
