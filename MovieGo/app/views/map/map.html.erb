@@ -32,6 +32,7 @@
       '<div id="bodyContent">' +
       '</div>' +
       '</div>';
+      console.log(content);
       return content;
     }
 
@@ -106,7 +107,7 @@
         });
 
         var infowindow = new google.maps.InfoWindow({
-          content: getInfoWindowHTML(timeRemaining, theatreName, coords, showtime);
+          content: getInfoWindowHTML(timeRemaining, theatreName, coords, showtime)
         });
 
         marker.addListener('click', function() {
