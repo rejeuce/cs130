@@ -25,6 +25,26 @@
   <div id="map"></div>
   <script>
 
+    function startTimer(duration, display) {
+      var timer = duration;
+      var minutes, seconds;
+
+      setInterval(function() {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0 ){
+          timer = duration;
+        }
+
+      }, 1000);
+    }
+
     function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtimehr, showtimemin, tickets) {
       var movieName = '<%= @title %>';
       var rating = '<%= @rating %>';
@@ -49,7 +69,11 @@
       runtime +
       '</p>' +
       '<p>Showing at ' + theatreName + ' at ' + showtimehr + ":" + showtimemin + ' | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
-      '<p id="timer">Time Remaining: ' + timeRemaining + ' minutes</p>' +
+      '<p>Time Remaining: <span id="timer">' + timeRemaining + '</span> minutes</p>' +
+      '<script>' +
+      'var display = document.querySelector("#timer");'+
+      'startTimer(' + timeRemaining + ', display);' + 
+      '</script>' + 
       '<p><i>' + description + "</i></p>" +
       '</div>' +
       '</div>';
