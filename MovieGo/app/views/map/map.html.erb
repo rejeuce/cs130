@@ -69,13 +69,7 @@
       runtime +
       '</p>' +
       '<p>Showing at ' + theatreName + ' at ' + showtimehr + ":" + showtimemin + ' | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
-      '<p>Time Remaining: <span id="timer" onload="countdown();">' + timeRemaining + '</span> minutes</p>' +
-      '<script>' +
-      'function countdown() {' +
-      ' var display = document.querySelector("#timer");'+
-      ' startTimer(' + timeRemaining + ' * 60, display);' + 
-      '}' +
-      '<' + '/script>' + 
+      '<p>Time Remaining: <span id="timer' + theatreName + '">' + timeRemaining + '</span> minutes</p>' +
       '<p><i>' + description + "</i></p>" +
       '</div>' +
       '</div>';
@@ -159,6 +153,8 @@
 
         marker.addListener('click', function() {
           infowindow.open(map, marker);
+          var display = document.querySelector("#timer" + theatreName);
+          startTimer(timeRemaining * 60, display); 
         });
       }
 
