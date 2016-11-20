@@ -69,10 +69,12 @@
       runtime +
       '</p>' +
       '<p>Showing at ' + theatreName + ' at ' + showtimehr + ":" + showtimemin + ' | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
-      '<p>Time Remaining: <span id="timer">' + timeRemaining + '</span> minutes</p>' +
+      '<p>Time Remaining: <span id="timer" onload="countdown();">' + timeRemaining + '</span> minutes</p>' +
       '<script>' +
-      'var display = document.querySelector("#timer");'+
-      'startTimer(' + timeRemaining + ', display);' + 
+      'function countdown() {' +
+      ' var display = document.querySelector("#timer");'+
+      ' startTimer(' + timeRemaining + ', display);' + 
+      '}' +
       '<' + '/script>' + 
       '<p><i>' + description + "</i></p>" +
       '</div>' +
