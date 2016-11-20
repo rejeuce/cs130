@@ -4,17 +4,39 @@
     <head>
       <title>MovieGo Movies View</title>
       <meta charset="utf-8">
+      <%= csrf_meta_tag %>
 
       <style>
-      .tile {
-        display: inline-block;
-        border: 1px solid grey;
-        background: silver;
-        padding: 4px;
-        text-align: center;
-        font-size: 15px;
-        width: 250px;
-      }
+            .tile {
+                display: inline-block;
+                border: 1px solid grey;
+                background: silver;
+                padding: 4px;
+                text-align: center;
+                font-size: 15px;
+                width: 250px;
+            }
+
+            .inline {
+              display: inline;
+            }
+
+            .link-button {
+              background: none;
+              border: none;
+              color: blue;
+              text-decoration: underline;
+              cursor: pointer;
+              font-size: 1em;
+              font-family: serif;
+            }
+            .link-button:focus {
+              outline: none;
+            }
+            .link-button:active {
+              color:red;
+            }
+
       </style>
 
     </head>
@@ -27,7 +49,7 @@
         <p>Find me in app/views/movies/list.html.erb</p>
 
         <form>
-        Zip Code: <input id="zip" type="text"> <br/>
+        Zip Code: <input id="zip" type="text">
         </form>
 
         <button onclick="httpGetAsync();">Find Movies</button>
@@ -43,7 +65,40 @@
             thumbnails["Jack Reacher: Never Go Back"] = "assets/jackreacher.jpg"
             thumbnails["The Accountant"] = "assets/accountant.jpg"
             thumbnails["Doctor Strange 3D"] = "assets/drstrange.jpg"
+            thumbnails["Doctor Strange"] = "assets/drstrange.jpg"
+            thumbnails["Trolls"] = "assets/smallberg.jpg"
             thumbnails["Hacksaw Ridge"] = "assets/hacksawridge.jpg"
+
+            var RESPONSE_INFO = "";
+
+            function makePostRequest(payload) {
+
+                console.log("Payload: " + payload);
+                $.ajax({
+                    beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))},
+                    url: 'map',
+                    type: 'POST',
+                    data: JSON.stringify(payload),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    async: true,
+                    success: function(msg) {
+                        window.location.href = "/map";
+                        //alert(msg);
+                    }
+                });
+            }
+
+            function getMovieInfo(movie_index) {
+                console.log("Movie Index: " + movie_index);
+                var result = JSON.parse(RESPONSE_INFO);
+                var movieInfo = result[movie_index];
+
+                console.log("Movie Title: " + result[movie_index].title);
+
+                //makePostRequest(JSON.stringify(movieInfo));
+                return JSON.stringify(movieInfo);
+            }
 
 
             function get_GET_REQUEST_URL() {
@@ -65,17 +120,21 @@
                 today = years + "-" + months + "-" + days; 
 
                 //var ZIPCODE = 90024;
-                var ZIPCODE = document.getElementById("zip").value;
-                console.log("Zip code from user: " + ZIPCODE);
+                var ZIPCODE = getLocationFromInput();
 
+                var FULL_URL = BASE_URL + today + "&zip=" + ZIPCODE + "&api_key=" + API_KEY;
+                return FULL_URL;
+            }
+
+            function getLocationFromInput() {
+                var ZIPCODE = document.getElementById("zip").value;
                 // todo: need to validate zip code
                 if (ZIPCODE < 0 || ZIPCODE > 99999) {
                     alert("Bad zip code!!");
                     ZIPCODE = 90024;
                 }
 
-                var FULL_URL = BASE_URL + today + "&zip=" + ZIPCODE + "&api_key=" + API_KEY;
-                return FULL_URL;
+                return ZIPCODE;
             }
 
 
@@ -84,11 +143,18 @@
                 //document.body.innerHtml += "<p>" + showtimes + "</p>";
 
                 var result = JSON.parse(showtimes);
+                
+                // assign response to global variable, so we can access movie information
+                // after a button click
+                RESPONSE_INFO = showtimes;
+
                 $(document.body).append("<pFound " + result.length + " movies showing!</p>");
 
                 var movies = result.hits;
 
                 var count = 0;
+                var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
+                var location = getLocationFromInput();
 
                 $.each(result, function(index, movie) {
                     var movieData = "";
@@ -97,10 +163,21 @@
                     if (imgsrc == undefined)
                         imgsrc = "assets/smallberg.jpg"
 
-                    movieData +='<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
+                    movieData += '<form method="post" action="map" class="inline">';
+                    movieData += '<input name="authenticity_token" type="hidden" value="' + AUTH_TOKEN + '">';
+                    movieData += '<input type="hidden" name="movie_info" value="' + encodeURIComponent(getMovieInfo(index)) + '">';
+
+                    movieData += '<input type="hidden" name="location" value="' + location + '">';
+
+                    movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
+
+                    movieData += '<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
 
                     movieData += movie.title;
+
                     movieData += "</div>";
+                    movieData += "</button>";
+                    movieData += '</form>';
                     $(document.body).append(movieData);
                     count++;
                 });
