@@ -17,27 +17,18 @@
     }
   </style>
 </head>
-<body onload="initMap(null)">
+<body onload="init()">
 
 <p id="latitude"></p>
 <p id="longitude"></p>
+<p id="response"></p>
 <p id="test"></p>
 
 <div id="map"></div>
 
 <script>
 
-  function getParameterByName(name) {
-    var url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-  }
-
-  function initMap(locations) {
+  function init() {
     var x = parseFloat(getParameterByName("lat"));
     var y = parseFloat(getParameterByName("long"));
 
@@ -45,12 +36,13 @@
     d.innerHTML = "latitude: " + x;
     d = document.getElementById("longitude");
     d.innerHTML = "longitude: " + y;
+    httpGetAsync(x, y);
+    initMap(x, y, null);
+  }
 
+  function initMap(x, y, locations) {
 
     var center = {lat: x, lng: y};
-    d = document.getElementById("test");
-    d.innerHTML = "test: " + x;
-
     var map = new google.maps.Map(document.getElementById('map'), {
       zoom: 14,
       center: center
@@ -70,16 +62,77 @@
       });
     }
   }
+
+  function GET_REQUEST_URL(lat, lng) {
+    var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
+    var BASE_URL = "http://data.tmsapi.com/v1.1/movies/showings?startDate=";
+
+    // get the current date
+    var today = new Date();
+    var days = today.getDate();
+    var months = today.getMonth() + 1;
+    var years = today.getFullYear();
+
+    if (days < 10)
+      days = "0" + days;
+    if (months < 10)
+      months = "0" + months;
+
+    // format the date string as 2016-11-03
+    today = years + "-" + months + "-" + days;
+
+    var FULL_URL = BASE_URL + today + "&lat=" + lat + "&lng=" + lng + "&api_key=" + API_KEY;
+    return FULL_URL;
+  }
+
+  function gatherTheaters(showtimes) {
+
+    var result = JSON.parse(showtimes);
+
+    // assign response to global variable, so we can access movie information
+    // after a button click
+    RESPONSE_INFO = showtimes;
+
+    var movies = result.hits;
+
+    var theaterID = result[0].showtimes[0].theatre.id;
+    var x = document.getElementById("test");
+    x.innerHTML = theaterID;
+  }
+
+  function httpGetAsync(lat, lng) {
+    var url = GET_REQUEST_URL(lat, lng);
+    var callback = gatherTheaters;
+    var xmlHttp = new XMLHttpRequest();
+
+    xmlHttp.onreadystatechange = function () {
+      if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+        callback(xmlHttp.responseText);
+      }
+    }
+    xmlHttp.open("GET", url, true);
+    xmlHttp.send(null);
+  }
+
+  function getParameterByName(name) {
+    var url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
 </script>
 <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A">
 </script>
 
 <%
-require 'sqlite3'
-# Open a SQLite 3 database file
-db = SQLite3::Database.open 'MovieGo.db'
-count = db.get_first_value( "select count(*) from Users" )
+  require 'sqlite3'
+  # Open a SQLite 3 database file
+  db = SQLite3::Database.open 'MovieGo.db'
+  count = db.get_first_value("select count(*) from Users")
 %>
 <%= "Users = " + count.to_s %>
 <% db.close if db %>
