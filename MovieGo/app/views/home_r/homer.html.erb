@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+<p>Use My Location
+  <button onclick="getLocation()">OK</button>
+</p>
+
+<p><input type="text" id="address" value="">
+  <button onclick="convertAddress()">Search</button>
+</p>
+
+<p id="latitude"></p>
+<p id="longitude"></p>
+
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script>
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }
+  function showPosition(position) {
+    var x;
+    var lat = position.coords.latitude;
+    var long = position.coords.longitude;
+    x = document.getElementById("latitude");
+    x.innerHTML = "latitude:" + position.coords.latitude;
+    x = document.getElementById("longitude");
+    x.innerHTML = "longitude:" + position.coords.longitude;
+    window.location.replace("/map_r/mapr?lat="+ lat + "&long=" + long);
+  }
+
+  function convertAddress() {
+    var address = document.getElementById("address").value;
+    var geocoder = new google.maps.Geocoder();
+    var x;
+
+    geocoder.geocode({'address': address}, function (results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var lat = results[0].geometry.location.lat();
+        var long = results[0].geometry.location.lng();
+        x = document.getElementById("latitude");
+        x.innerHTML = "latitude:" + lat;
+        x = document.getElementById("longitude");
+        x.innerHTML = "longitude:" + long;
+        window.location.replace("/map_r/mapr?lat="+ lat + "&long=" + long);
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

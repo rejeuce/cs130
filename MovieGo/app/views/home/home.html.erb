@@ -5,11 +5,13 @@
     #map {
       height: 75%;
     }
+
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
     }
+
     p, form {
       text-indent: 50px;
     }
@@ -17,10 +19,13 @@
 </head>
 <body>
 
-<p>Use My Location <button onclick="getLocation()">OK</button> </p>
+<p>Use My Location
+  <button onclick="getLocation()">OK</button>
+</p>
 
 <p><input type="text" id="address" value="">
-<button onclick="convertAddress()">Search</button> </p>
+  <button onclick="convertAddress()">Search</button>
+</p>
 
 <p id="url"></p>
 <p id="response"></p>
@@ -32,7 +37,7 @@
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
     } else {
-      x.innerHTML = "Geolocation is not supported by this browser.";
+      alert("Geolocation is not supported by this browser.");
     }
   }
   function showPosition(position) {
@@ -52,7 +57,7 @@
     var marker, i;
     var markers = [
       {lat: x, lng: y},
-      {lat: x+.01, lng: y+.01}
+      {lat: x + .01, lng: y + .01}
     ];
     for (i = 0; i < locations; i++) {
       markers.push(locations[i]);
@@ -79,7 +84,7 @@
       if (status == google.maps.GeocoderStatus.OK) {
         var lat = results[0].geometry.location.lat();
         var long = results[0].geometry.location.lng();
-        httpGetAsync(lat, long);
+        //httpGetAsync(lat, long);
         initMap(lat, long, null);
       }
     });
@@ -118,38 +123,38 @@
     x.innerHTML = showtimes;
 
     /*var result = JSON.parse(showtimes);
-    $(document.body).append("<pFound " + result.length + " movies showing!</p>");
+     $(document.body).append("<pFound " + result.length + " movies showing!</p>");
 
-    var movies = result.hits;
+     var movies = result.hits;
 
-    var count = 0;
+     var count = 0;
 
-    $.each(result, function(index, movie) {
-      var movieData = "";
-      var imgsrc = thumbnails[movie.title];
+     $.each(result, function(index, movie) {
+     var movieData = "";
+     var imgsrc = thumbnails[movie.title];
 
-      if (imgsrc == undefined)
-        imgsrc = "assets/smallberg.jpg"
+     if (imgsrc == undefined)
+     imgsrc = "assets/smallberg.jpg"
 
-      movieData +='<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
+     movieData +='<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
 
-      movieData += movie.title;
-      movieData += "</div>";
-      $(document.body).append(movieData);
-      count++;
-    });*/
+     movieData += movie.title;
+     movieData += "</div>";
+     $(document.body).append(movieData);
+     count++;
+     });*/
   }
 
   function httpGetAsync(lat, lng) {
-    var url = GET_REQUEST_URL(lat, lng);
 
+    var url = GET_REQUEST_URL(lat, lng);
     var x = document.getElementById("url");
     x.innerHTML = "URL:" + url;
 
     var callback = displayMovieShowtimes;
     var xmlHttp = new XMLHttpRequest();
 
-    xmlHttp.onreadystatechange = function() {
+    xmlHttp.onreadystatechange = function () {
       if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
         callback(xmlHttp.responseText);
       }
@@ -158,6 +163,12 @@
     xmlHttp.send(null);
   }
 </script>
+
+<p>
+  <% for i in 0..9 do %>
+      <%= "Inside the loop i = #$i" %>
+  <% end %>
+</p>
 
 </body>
 </html>

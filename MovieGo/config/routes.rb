@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
 
+  get 'home_r/homer'
+
+  get 'map_r/mapr'
+
   root 'home#landing'
 
   get 'login' => 'login#login'

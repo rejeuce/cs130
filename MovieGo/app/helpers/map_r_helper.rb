@@ -1,0 +1,2 @@
+module MapRHelper
+end

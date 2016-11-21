@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #map {
+      height: 75%;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    p, form {
+      text-indent: 50px;
+    }
+  </style>
+</head>
+<body onload="initMap(null)">
+
+<p id="latitude"></p>
+<p id="longitude"></p>
+<p id="test"></p>
+
+<div id="map"></div>
+
+<script>
+
+  function getParameterByName(name) {
+    var url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  function initMap(locations) {
+    var x = parseFloat(getParameterByName("lat"));
+    var y = parseFloat(getParameterByName("long"));
+
+    var d = document.getElementById("latitude");
+    d.innerHTML = "latitude: " + x;
+    d = document.getElementById("longitude");
+    d.innerHTML = "longitude: " + y;
+
+
+    var center = {lat: x, lng: y};
+    d = document.getElementById("test");
+    d.innerHTML = "test: " + x;
+
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 14,
+      center: center
+    });
+    var marker, i;
+    var markers = [
+      {lat: x, lng: y},
+      {lat: x + .01, lng: y + .01}
+    ];
+    for (i = 0; i < locations; i++) {
+      markers.push(locations[i]);
+    }
+    for (i = 0; i < markers.length; i++) {
+      marker = new google.maps.Marker({
+        position: markers[i],
+        map: map
+      });
+    }
+  }
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A">
+</script>
+
+</body>
+</html>
