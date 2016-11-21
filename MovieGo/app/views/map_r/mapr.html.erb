@@ -75,5 +75,14 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A">
 </script>
 
+<%
+require 'sqlite3'
+# Open a SQLite 3 database file
+db = SQLite3::Database.open 'MovieGo.db'
+count = db.get_first_value( "select count(*) from Users" )
+%>
+<%= "Users = " + count.to_s %>
+<% db.close if db %>
+
 </body>
 </html>
