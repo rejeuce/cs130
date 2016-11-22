@@ -19,12 +19,12 @@
 
 <div id="user_nav">
     <% if current_user %>
-        <%= link_to "MovieGo", root_path, class: "btn btn-secondary btn-lg"%>
-        <%= link_to "Movies", movies_path, class: "btn btn-secondary btn-lg" %>
-        <%= link_to "Log Out", signout_path, id:"sign_out", class: "btn btn-secondary btn-lg"%>
+        <%= link_to "MovieGo", root_path, class: "btn btn-secondary btn-sm"%>
+        <%= link_to "Movies", movies_path, class: "btn btn-secondary btn-sm" %>
+        <%= link_to "Log Out", signout_path, id:"sign_out", class: "btn btn-secondary btn-sm"%>
     <% else %>
-        <%= link_to "MovieGo", root_path, class: "btn btn-secondary btn-lg"%>
-        <%= link_to "Log In", "/auth/facebook", id:"sign_in", class: "btn btn-secondary btn-lg"%>
+        <%= link_to "MovieGo", root_path, class: "btn btn-secondary btn-sm"%>
+        <%= link_to "Log In", "/auth/facebook", id:"sign_in", class: "btn btn-secondary btn-sm"%>
     <% end %>
 </div>
 

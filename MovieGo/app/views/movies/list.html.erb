@@ -2,6 +2,7 @@
 <html>
 
     <head>
+      <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=JosefinSlab">
       <title>MovieGo Movies View</title>
       <meta charset="utf-8">
       <%= csrf_meta_tag %>
@@ -43,12 +44,17 @@
     <%= render 'shared/navigation' %>
 
     <body>
-        <h1>Movies#list</h1>
         <p>Find me in app/views/movies/list.html.erb</p>
 
-        <form>
-        Zip Code: <input id="zip" type="text">
-        </form>
+        <!--<form style="align:center;">
+        Zip Code: <input style="align:center;" id="zip" type="text">
+        </form>-->
+
+        <div align="center">
+            <form>
+                Zip Code : <input style="width:200px;" id="zip" type="text">
+            </form>
+        </div>
 
         <button onclick="httpGetAsync();">Find Movies</button>
         <br/>
