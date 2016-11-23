@@ -16,6 +16,11 @@
         margin: 0;
         padding: 0;
       }
+      .fake-link {
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
@@ -24,6 +29,10 @@
   </h2>
   <div id="map"></div>
   <script>
+
+    var USER_LOCATION = "";
+    var DIRECTIONS_SERVICE = "";
+    var DIRECTIONS_DISPLAY = "";
 
     function startTimer(duration, display) {
       var timer = duration;
@@ -43,6 +52,20 @@
         }
 
       }, 1000);
+    }
+
+    function displayDirections(directionsService, directionsDisplay, origin, destination) {
+      directionsService.route({
+        origin: origin,
+        destination: destination,
+        travelMode: 'DRIVING'
+      }, function(response, status) {
+        if (status === 'OK') {
+          directionsDisplay.setDirections(response);
+        } else {
+          console.log("Directions failed due to: " + status);
+        }
+      });
     }
 
     function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtimehr, showtimemin, tickets) {
@@ -70,6 +93,7 @@
       '</p>' +
       '<p>Showing at ' + theatreName + ' at ' + showtimehr + ":" + showtimemin + ' | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
       '<p>Time Remaining: <span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes</p>' +
+      '<p> <span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Directions</span></p>' +
       '<p><i>' + description + "</i></p>" +
       '</div>' +
       '</div>';
@@ -156,6 +180,12 @@
           var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
           startTimer(timeRemaining * 60, display); 
         });
+
+        var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
+        directionsButton.addListener('click', function() {
+          displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
+        });
+
       }
 
       console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
@@ -224,11 +254,18 @@
       // set the map to center on the 'mapCenter', and the zoom level
       // higher zoom means closer
       console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
+      USER_LOCATION = mapCenter;
 
+      // init the map
       var map = new google.maps.Map(document.getElementById('map'), {
         center: mapCenter,
         zoom: 13
       });
+
+      // init directions services
+      DIRECTIONS_SERVICE = new google.maps.DirectionsService;
+      DIRECTIONS_DISPLAY = new google.maps.DirectionsRenderer;
+      DIRECTIONS_DISPLAY.setMap(map);
 
       // place a marker for the user's position
       addMarker(mapCenter, map, -1, "User's Location", "00", "00", "www.google.com");
@@ -249,6 +286,13 @@
       addTheatresToMap(map, showtimes, 0, alreadyAdded);
     }
 
+
+    function getUserLocation() {
+      // get the user location from the map controller
+      var userLocation = '<%= @location %>';
+      console.log("User Location: " + userLocation);
+
+    }
 
     function initMap() {
       // center the map location on the user's location
