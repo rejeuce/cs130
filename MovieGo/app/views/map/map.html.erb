@@ -18,7 +18,7 @@
       }
       .fake-link {
         color: red;
-        text-decoration: underline;
+        font-weight: bold;
         cursor: pointer;
       }
     </style>
@@ -178,7 +178,7 @@
           infowindow.open(map, marker);
           var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
           var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
-            directionsButton.addListener('click', function() {
+            directionsButton.addEventListener('click', function() {
               displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
           });
           startTimer(timeRemaining * 60, display); 
