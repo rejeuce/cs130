@@ -1,96 +1,107 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <style>
-    #map {
-      height: 75%;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    p, form {
-      text-indent: 50px;
-    }
-  </style>
-</head>
+
 <body>
 
-<p>Use My Location <button onclick="getLocation()">OK</button> </p>
+<p>Use My Location
+  <button onclick="getLocation()">OK</button>
+</p>
 
 <p><input type="text" id="address" value="">
-<button onclick="convertAddress()">Search</button> </p>
+  <button onclick="convertAddress()">Search</button>
+</p>
 
-<p id="url"></p>
-<p id="response"></p>
+<p id="latitude"></p>
+<p id="longitude"></p>
 
-<div id="map"></div>
-
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script>
   function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
     } else {
-      x.innerHTML = "Geolocation is not supported by this browser.";
+      alert("Geolocation is not supported by this browser.");
     }
   }
   function showPosition(position) {
-    //x.innerHTML = "Latitude: " + position.coords.latitude +
-    //    "<br>Longitude: " + position.coords.longitude;
-    initMap(position.coords.latitude, position.coords.longitude, null)
+    var x;
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    x = document.getElementById("latitude");
+    x.innerHTML = "latitude:" + position.coords.latitude;
+    x = document.getElementById("longitude");
+    x.innerHTML = "longitude:" + position.coords.longitude;
+    httpGetAsync(lat, lng);
   }
-</script>
-
-<script>
-  function initMap(x, y, locations) {
-    var center = {lat: x, lng: y};
-    var map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 14,
-      center: center
-    });
-    var marker, i;
-    var markers = [
-      {lat: x, lng: y},
-      {lat: x+.01, lng: y+.01}
-    ];
-    for (i = 0; i < locations; i++) {
-      markers.push(locations[i]);
-    }
-    for (i = 0; i < markers.length; i++) {
-      marker = new google.maps.Marker({
-        position: markers[i],
-        map: map
-      });
-    }
-  }
-</script>
-<script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap">
-</script>
-
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript">
   function convertAddress() {
     var address = document.getElementById("address").value;
     var geocoder = new google.maps.Geocoder();
-
+    var x;
     geocoder.geocode({'address': address}, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var lat = results[0].geometry.location.lat();
-        var long = results[0].geometry.location.lng();
-        httpGetAsync(lat, long);
-        initMap(lat, long, null);
+        var lng = results[0].geometry.location.lng();
+        x = document.getElementById("latitude");
+        x.innerHTML = "latitude:" + lat;
+        x = document.getElementById("longitude");
+        x.innerHTML = "longitude:" + lng;
+        httpGetAsync(lat, lng);
       }
     });
   }
 </script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script
+src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <script>
 
+  var thumbnails = new Object();
+  thumbnails["Inferno"] = "assets/inferno.jpg";
+  thumbnails["Keeping Up With the Joneses"] = "assets/kuwtj.jpg";
+  thumbnails["Jack Reacher: Never Go Back"] = "assets/jackreacher.jpg"
+  thumbnails["The Accountant"] = "assets/accountant.jpg"
+  thumbnails["Doctor Strange 3D"] = "assets/drstrange.jpg"
+  thumbnails["Doctor Strange"] = "assets/drstrange.jpg"
+  thumbnails["Trolls"] = "assets/smallberg.jpg"
+  thumbnails["Hacksaw Ridge"] = "assets/hacksawridge.jpg"
+
+  var RESPONSE_INFO = "";
+
+  function makePostRequest(payload) {
+
+    console.log("Payload: " + payload);
+    $.ajax({
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
+      },
+      url: 'map',
+      type: 'POST',
+      data: JSON.stringify(payload),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      async: true,
+      success: function (msg) {
+        window.location.href = "/map";
+        //alert(msg);
+      }
+    });
+  }
+
+  function getMovieInfo(movie_index) {
+    console.log("Movie Index: " + movie_index);
+    var result = JSON.parse(RESPONSE_INFO);
+    var movieInfo = result[movie_index];
+
+    console.log("Movie Title: " + result[movie_index].title);
+
+    //makePostRequest(JSON.stringify(movieInfo));
+    return JSON.stringify(movieInfo);
+  }
+
+
   function GET_REQUEST_URL(lat, lng) {
-    var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
+//    var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
+    var API_KEY = "un3bsktad33mj4s4tzpaym3u";
     var BASE_URL = "http://data.tmsapi.com/v1.1/movies/showings?startDate=";
 
     // get the current date
@@ -111,47 +122,62 @@
     return FULL_URL;
   }
 
+  function displayMovieShowtimes(showtimes, lat, lng) {
+    console.log("hello!");
+    //document.body.innerHtml += "<p>" + showtimes + "</p>";
 
-  function displayMovieShowtimes(showtimes) {
-    document.body.innerHtml += "<p>" + showtimes + "</p>";
-    var x = document.getElementById("response");
-    x.innerHTML = showtimes;
+    var result = JSON.parse(showtimes);
 
-    /*var result = JSON.parse(showtimes);
+    // assign response to global variable, so we can access movie information
+    // after a button click
+    RESPONSE_INFO = showtimes;
+
     $(document.body).append("<pFound " + result.length + " movies showing!</p>");
 
     var movies = result.hits;
 
     var count = 0;
+    var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
 
-    $.each(result, function(index, movie) {
+    $.each(result, function (index, movie) {
       var movieData = "";
       var imgsrc = thumbnails[movie.title];
 
       if (imgsrc == undefined)
         imgsrc = "assets/smallberg.jpg"
 
-      movieData +='<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
+      movieData += '<form method="post" action="map" class="inline">';
+      movieData += '<input name="authenticity_token" type="hidden" value="' + AUTH_TOKEN + '">';
+      movieData += '<input type="hidden" name="movie_info" value="' + encodeURIComponent(getMovieInfo(index)) + '">';
+
+      movieData += '<input type="hidden" name="latitude" value="' + lat + '">';
+      movieData += '<input type="hidden" name="longitude" value="' + lng + '">';
+
+      movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
+
+      movieData += '<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
 
       movieData += movie.title;
+
       movieData += "</div>";
+      movieData += "</button>";
+      movieData += '</form>';
       $(document.body).append(movieData);
       count++;
-    });*/
+    });
+
+//    console.log(showtimes);
   }
 
   function httpGetAsync(lat, lng) {
+    console.log("hi!");
     var url = GET_REQUEST_URL(lat, lng);
-
-    var x = document.getElementById("url");
-    x.innerHTML = "URL:" + url;
-
     var callback = displayMovieShowtimes;
     var xmlHttp = new XMLHttpRequest();
 
-    xmlHttp.onreadystatechange = function() {
+    xmlHttp.onreadystatechange = function () {
       if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-        callback(xmlHttp.responseText);
+        callback(xmlHttp.responseText, lat, lng);
       }
     }
     xmlHttp.open("GET", url, true);

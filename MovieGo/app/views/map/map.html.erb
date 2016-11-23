@@ -161,20 +161,6 @@
       console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
     }
 
-    function convertAddressToCoordinates(addie, callback) {
-      var address = addie;
-      var geocoder = new google.maps.Geocoder();
-
-      geocoder.geocode({'address': address}, function (results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-          var lati = results[0].geometry.location.lat();
-          var longi = results[0].geometry.location.lng();
-          var coords = {lat: lati, lng: longi};
-          callback(coords);
-        }
-      });
-    }
-
     function addTheatresToMap(map, showtimes, count, alreadyAdded) {
 
       if (count == showtimes.length)
@@ -264,9 +250,11 @@
     function initMap() {
       // center the map location on the user's location
       // use the users location as the map center
-      var userLocation = '<%= @location %>';
-      console.log("User Location: " + userLocation);
-      convertAddressToCoordinates(userLocation, drawMap);
+      var userLatitude = parseFloat('<%= @latitude %>');
+      var userLongitude = parseFloat('<%= @longitude %>');
+      console.log("User Coordinates: " + userLatitude + ", " + userLongitude);
+      var coords = {lat: userLatitude, lng: userLongitude};
+      drawMap(coords);
     }
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap&libraries=places" async defer></script>
