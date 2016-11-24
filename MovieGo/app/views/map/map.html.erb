@@ -58,7 +58,7 @@
     }
 
 
-    function getTimeToArrival(origin, destination, etaElement) {
+    function getTimeToArrival(origin, destination, etaElement, timeRemaining) {
       DISTANCE_SERVICE.getDistanceMatrix({
         origins: [origin],
         destinations: [destination],
@@ -75,6 +75,13 @@
 
               duration = duration.replace("mins", "minutes");
               duration = duration.replace("hrs", "hours");
+
+              var intDuration = parseInt(duration.replace("mins", "").replace("hrs", ""), 10);
+              if (timeRemaining < intDuration)
+                etaElement.style.color = "red";
+              else
+                etaElement.style.color = "green";
+
               etaElement.textContent = duration;
               return;
             }
@@ -212,7 +219,7 @@
             directionsButton.addEventListener('click', function() {
               displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
           });
-            
+
           if (!TIMER_STORAGE.hasOwnProperty(theatreName.split(" ").join("")))
             TIMER_STORAGE[theatreName.split(" ").join("")] = startTimer(timeRemaining * 60, display); 
 
