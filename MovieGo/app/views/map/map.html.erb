@@ -41,7 +41,7 @@
       var timer = duration;
       var minutes, seconds;
 
-      setInterval(function() {
+      return setInterval(function() {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -212,7 +212,9 @@
             directionsButton.addEventListener('click', function() {
               displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
           });
-          TIMER_STORAGE[theatreName.split(" ").join("")] = startTimer(timeRemaining * 60, display); 
+            
+          if (!TIMER_STORAGE.hasOwnProperty(theatreName.split(" ").join("")))
+            TIMER_STORAGE[theatreName.split(" ").join("")] = startTimer(timeRemaining * 60, display); 
 
           var etaDisplay = document.querySelector("#eta" + theatreName.split(" ").join(""));
           getTimeToArrival(USER_LOCATION, coords, etaDisplay);
@@ -223,8 +225,6 @@
             infowindow.close();
             // remove directions overlay
             DIRECTIONS_DISPLAY.setDirections({routes: []});
-
-            clearInterval(TIMER_STORAGE[theatreName.split(" ").join("")]);
         });
 
       }
