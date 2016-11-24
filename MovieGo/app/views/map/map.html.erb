@@ -184,6 +184,12 @@
           startTimer(timeRemaining * 60, display); 
         });
 
+        infowindow.addListener('close', function() {
+            infowindow.close();
+            // remove directions overlay
+            DIRECTIONS_DISPLAY.set('directions', null);
+        });
+
       }
 
       console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
@@ -272,8 +278,8 @@
       });
 
       // init directions services
-      DIRECTIONS_SERVICE = new google.maps.DirectionsService;
-      DIRECTIONS_DISPLAY = new google.maps.DirectionsRenderer;
+      DIRECTIONS_SERVICE = new google.maps.DirectionsService();
+      DIRECTIONS_DISPLAY = new google.maps.DirectionsRenderer({suppressMarkers: true});
       DIRECTIONS_DISPLAY.setMap(map);
 
       // place a marker for the user's position
