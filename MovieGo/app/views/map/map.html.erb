@@ -163,6 +163,9 @@
 
     function addTheatresToMap(map, showtimes, count, alreadyAdded) {
 
+      if (showtimes == null)
+        return;
+
       if (count == showtimes.length)
         return;
 
