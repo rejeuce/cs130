@@ -224,7 +224,7 @@
             TIMER_STORAGE[theatreName.split(" ").join("")] = startTimer(timeRemaining * 60, display); 
 
           var etaDisplay = document.querySelector("#eta" + theatreName.split(" ").join(""));
-          getTimeToArrival(USER_LOCATION, coords, etaDisplay);
+          getTimeToArrival(USER_LOCATION, coords, etaDisplay, timeRemaining);
         });
 
         infowindow.addListener('closeclick', function() {
