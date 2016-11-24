@@ -185,6 +185,7 @@
         });
 
         infowindow.addListener('close', function() {
+            console.log("close window");
             infowindow.close();
             // remove directions overlay
             DIRECTIONS_DISPLAY.setDirections({routes: []});
