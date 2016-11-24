@@ -9,7 +9,11 @@
     <meta charset="utf-8">
     <style>
       #map {
-        height: 100%;
+        position: absolute;
+        top: 100px;
+        left: 0;
+        bottom: 100px;
+        right: 0;
       }
       html, body {
         height: 100%;
@@ -80,7 +84,7 @@
               if (timeRemaining < intDuration)
                 etaElement.style.color = "red";
               else
-                etaElement.style.color = "lightgreen";
+                etaElement.style.color = "green";
 
               etaElement.textContent = duration;
               return;
