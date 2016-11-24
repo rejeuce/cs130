@@ -184,7 +184,7 @@
           startTimer(timeRemaining * 60, display); 
         });
 
-        infowindow.addListener('close', function() {
+        infowindow.addListener('closeclick', function() {
             console.log("close window");
             infowindow.close();
             // remove directions overlay
