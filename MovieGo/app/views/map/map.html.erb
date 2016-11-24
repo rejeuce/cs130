@@ -33,6 +33,7 @@
     var USER_LOCATION = "";
     var DIRECTIONS_SERVICE = "";
     var DIRECTIONS_DISPLAY = "";
+    var DISTANCE_SERVICE = "";
 
     function startTimer(duration, display) {
       var timer = duration;
@@ -52,6 +53,30 @@
         }
 
       }, 1000);
+    }
+
+
+    function getTimeToArrival(origin, destination, etaElement) {
+      DISTANCE_SERVICE.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: 'DRIVING'
+      }, function(response, status) {
+        if (status === 'OK') {
+          var origins = response.originAddresses;
+
+          for (var i = 0; i < origins.length; i++) {
+            var results = response.rows[i].elements;
+            for (var j = 0; j < results.length; j++) {
+              var element = results[j];
+              var duration = element.duration.text;
+
+              etaElement.textContent = duration;
+              return;
+            }
+          }
+        }
+      });
     }
 
     function displayDirections(directionsService, directionsDisplay, origin, destination) {
@@ -92,7 +117,9 @@
       runtime +
       '</p>' +
       '<p>Showing at ' + theatreName + ' at ' + showtimehr + ":" + showtimemin + ' | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
-      '<p>Time Remaining: <span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes | <span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
+      '<p>Time Remaining: <span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes | ' +
+      'Right now, it would take you <span id="eta' + theatreName.split(" ").join("") + '"> </span> minutes to get there | ' +
+      '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
       '<p><i>' + description + "</i></p>" +
       '</div>' +
       '</div>';
@@ -182,6 +209,9 @@
               displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
           });
           startTimer(timeRemaining * 60, display); 
+
+          var etaDisplay = document.querySelector("#eta" + theatreName.split(" ").join(""));
+          getTimeToArrival(USER_LOCATION, coords, etaDisplay);
         });
 
         infowindow.addListener('closeclick', function() {
@@ -271,6 +301,9 @@
       DIRECTIONS_SERVICE = new google.maps.DirectionsService();
       DIRECTIONS_DISPLAY = new google.maps.DirectionsRenderer({suppressMarkers: true});
       DIRECTIONS_DISPLAY.setMap(map);
+
+      // init distance matrix service
+      DISTANCE_SERVICE = new google.maps.DistanceMatrixService();
 
       // place a marker for the user's position
       addMarker(mapCenter, map, -1, "User's Location", "00", "00", "www.google.com");
