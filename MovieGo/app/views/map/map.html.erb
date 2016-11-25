@@ -121,7 +121,7 @@
 
       var content = '<div id="content">' +
       '<h1 style="color:black;">' + movieName + '</h1>' +
-      '<div id="bodyContent">' +
+      '<div id="bodyContent" style="float left; width: 50%;">' +
       '<p><span style="border: 1px solid grey">' + rating + '</span> ' + 
       "  " + year + " | " +
       genre.join("/") + " | " +
@@ -131,9 +131,9 @@
       '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
       'Right now, it would take you <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> to get there | ' +
       '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
-      '<div id="rightpanel' + theatreName.split(" ").join("") + '"></div>' +
       '<p><i>' + description + "</i></p>" +
       '</div>' +
+      '<div id="rightpanel' + theatreName.split(" ").join("") + '" style="float left; width: 50%;"></div>' +
       '</div>';
       console.log(content);
       return content;
