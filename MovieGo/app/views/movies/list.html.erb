@@ -7,37 +7,44 @@
   <%= csrf_meta_tag %>
 
   <style>
-    .tile {
-      display: inline-block;
-      border: 1px solid grey;
-      background: silver;
-      padding: 4px;
-      text-align: center;
-      font-size: 15px;
-      width: 250px;
-    }
+      .tile {
+          display: inline-block;
+          border: 1px none WhiteSmoke;
+          border-radius: 8px;
+          background-color: #EDEDED;
+          padding: 4px;
+          width: 250px;
+          height: 350px;
+          overflow: hidden;
+          position: relative;
+          left: 50px;
+      }
 
-    .inline {
-      display: inline;
-    }
+      .inline {
+          display: inline;
+      }
 
-    .link-button {
-      background: none;
-      border: none;
-      color: blue;
-      text-decoration: underline;
-      cursor: pointer;
-      font-size: 1em;
-      font-family: serif;
-    }
-
-    .link-button:focus {
-      outline: none;
-    }
-
-    .link-button:active {
-      color: red;
-    }
+      .link_button {
+          margin: 10px;
+          background: none;
+          border: none;
+          color: black;
+          text-decoration: underline;
+          cursor: pointer;
+          font-size: 1em;
+          font-family: serif;
+      }
+      .link_button:focus {
+          outline: none;
+      }
+      .link_button:active {
+          color:red;
+      }
+      p.movie-title {
+          color: black;
+          text-align: center;
+          font-size:14px;
+      }
 
   </style>
 
@@ -54,6 +61,8 @@
 <p><input type="text" id="address" value="">
   <button onclick="convertAddress()">Search</button>
 </p>
+
+<hr>
 
 <script>
   function getLocation() {
@@ -191,7 +200,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       movieData += '<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
 
-      movieData += movie.title;
+        movieData += '<p class="movie-title">' + movie.title + '</p>';
 
       movieData += "</div>";
       movieData += "</button>";
@@ -219,6 +228,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A" async defer></script>
+
 
 </body>
 </html>
