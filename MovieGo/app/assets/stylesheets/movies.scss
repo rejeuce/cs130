@@ -1,3 +1,69 @@
 // Place all the styles related to the movies controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+.tile {
+  display: inline-block;
+  border: 1px none WhiteSmoke;
+  border-radius: 8px;
+  background-color: #EDEDED;
+  padding: 4px;
+  width: 250px;
+  height: 350px;
+  overflow: hidden;
+  position: relative;
+  left: 50px;
+}
+
+.inline {
+  display: inline;
+}
+
+.link_button {
+  margin: 10px;
+  background: none;
+  border: none;
+  color: black;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1em;
+  font-family: serif;
+}
+.link_button:focus {
+  outline: none;
+}
+.link_button:active {
+  color:red;
+}
+p.movie-title {
+  color: black;
+  text-align: center;
+  font-size:14px;
+}
+
+.location-center {
+  margin: auto;
+}
+
+button.location-button {
+  background-color: DodgerBlue;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  padding: 8px 28px;
+}
+
+button.search-button {
+  background-color: #EDEDED;
+  border-radius: 6px;
+  color: black;
+  border: none;
+  padding: 3px 14px;
+
+}
+
+input.location-input {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
