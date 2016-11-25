@@ -220,7 +220,7 @@
           var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
           var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
           directionsButton.addEventListener('click', function() {
-            DIRECTIONS_DISPLAY.setPanel(document.querySelector("#rightpanel" + theatreName.split(" ").join(""));)
+            DIRECTIONS_DISPLAY.setPanel(document.querySelector("#rightpanel" + theatreName.split(" ").join("")));
             displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
           });
 
