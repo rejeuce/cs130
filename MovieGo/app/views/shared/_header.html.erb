@@ -1,3 +1,11 @@
+<div id="user-widget" style="position:absolute; right:20px; top:10px;">
+  <% if current_user %>
+      Welcome <strong><%= current_user.name  %></strong>!
+      <%= link_to "Sign out", signout_path, id: "sign_out" %>
+  <% else %>
+      <%= link_to "Sign in with Facebook", "/auth/facebook", id: "sign_in" %>
+  <% end %>
+</div>
 <div>
   <h1 id="page_header">MovieGo</h1>
 </div>

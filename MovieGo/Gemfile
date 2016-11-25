@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+
+gem 'omniauth'
+gem 'omniauth-facebook'
 gem 'modernizr-rails'
 gem 'webmock'
 gem 'bootstrap-sass', '~> 3.3.6'
