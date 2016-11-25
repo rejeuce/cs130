@@ -10,8 +10,9 @@
     <style>
       #map {
         position: relative;
+        height: 75%;
       }
-      html, body, #map {
+      html, body, {
         height: 100%;
         width: 100%;
         margin: 0;
@@ -132,6 +133,7 @@
       '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
       'Right now, it would take you <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> to get there | ' +
       '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
+      '<div> id="rightpanel' theatreName.split(" ").join("") + '"></div>' +
       '<p><i>' + description + "</i></p>" +
       '</div>' +
       '</div>';
@@ -217,8 +219,9 @@
           infowindow.open(map, marker);
           var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
           var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
-            directionsButton.addEventListener('click', function() {
-              displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
+          directionsButton.addEventListener('click', function() {
+            DIRECTIONS_DISPLAY.setPanel(document.querySelector("#rightpanel" + theatreName.split(" ").join(""));)
+            displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
           });
 
           if (!TIMER_STORAGE.hasOwnProperty(theatreName.split(" ").join("")))
