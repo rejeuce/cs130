@@ -63,6 +63,8 @@
 src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <script>
 
+  var KEY = "ghbb64hj9th6yfu9dp8e6k4w";
+
   var thumbnails = new Object();
   thumbnails["Inferno"] = "assets/inferno.jpg";
   thumbnails["Keeping Up With the Joneses"] = "assets/kuwtj.jpg";
@@ -108,9 +110,9 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
 
   function GET_REQUEST_URL(lat, lng) {
-//    var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
+      var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
     //var API_KEY = "un3bsktad33mj4s4tzpaym3u";
-    var API_KEY = "xmf8jaxmdfpucq8pqmt46xn6";
+    //var API_KEY = "xmf8jaxmdfpucq8pqmt46xn6";
     var BASE_URL = "http://data.tmsapi.com/v1.1/movies/showings?startDate=";
 
     // get the current date
@@ -152,6 +154,8 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
       var movieData = "";
       var imgsrc = thumbnails[movie.title];
 
+      console.log(movie);
+
       if (imgsrc == undefined)
         imgsrc = "assets/smallberg.jpg"
 
@@ -165,7 +169,8 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
 
-      movieData += '<div class="tile"><img style="height: 300px; width: 200px; object-fit: contain" src="' + imgsrc + '"><br/>';
+      movieData += '<div class="tile"><img style="height: 300px; width: 200px; object-fit: contain" ' +
+          'src="http://developer.tmsimg.com/' + movie.preferredImage.uri + '?api_key='+ KEY +'">';
 
       movieData += '<p class="movie-title">' + movie.title + '</p>';
 
