@@ -58,8 +58,9 @@
                     end %>
             <% end %>
         <% end %>
-
-        | <%= @displayTime %>
+        <br>
+        <br>
+        <%= @displayTime %>
       </p>
 
       <p id="movie-description" class="movie-info"><i><%= @description %></i></p>
@@ -85,8 +86,10 @@
 
   var TIMER_STORAGE = {};
 
+  /*
   var ALL_INFO_WINDOWS = [];
   var ALL_MARKERS = [];
+  */
 
   function startTimer(duration, display) {
     var timer = duration;
@@ -163,9 +166,10 @@
 
     var content = '<div id="content">' +
         '<div id="bodyContent">' +
-        '<p>Showing at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
+        '<p>Showing at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> <br>' +
+        ' <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
         '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
-        'Right now, it would take you <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> to get there | ' +
+        'Travel Time: <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> | ' +
         '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
         '</div>' +
         '</div>';
@@ -239,9 +243,11 @@
     else {
       var marker = new google.maps.Marker({
         position: coords,
-        map: map
+        map: map,
+        icon: markerImage
       });
 
+      /*
       // Infowindow to show just the timer.
       var timerwindow = new google.maps.InfoWindow({
         content: '<div><p><b><span id="timer1' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span></b></p><div>'
@@ -256,6 +262,8 @@
       var timer = document.querySelector("#timer1" + theatreName.split(" ").join(""));
       startTimer(timeRemaining * 60, timer);
 
+      */
+
       // infowindow is the Infowindow that shows up when a theater is directly clicked on.
       var infowindow = new google.maps.InfoWindow({
         content: getInfoWindowHTML(timeRemaining, theatreName, coords, showtimehr, showtimemin, tickets)
@@ -263,10 +271,12 @@
 
       marker.addListener('click', function() {
 
+        /*
         // Close all timer infowindows.
         for(var i = 0; i < ALL_INFO_WINDOWS.length; i++) {
           ALL_INFO_WINDOWS[i].close();
         }
+        */
 
         infowindow.open(map, marker);
 
@@ -293,10 +303,12 @@
         console.log("close window");
         infowindow.close();
 
+        /*
         // reopen all timer windows
         for(var i = 0; i < ALL_INFO_WINDOWS.length; i++) {
           ALL_INFO_WINDOWS[i].open(map, ALL_MARKERS[i]);
         }
+        */
 
         // if needed, switch back the description in the side panel.
         document.getElementById("movie-description").style.display = "block";
