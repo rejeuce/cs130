@@ -18,46 +18,46 @@
 <div class="location-center" style="width:500px;">
   <p style="display:inline; margin-right:10px; color:black;">Find Movies Near You:</p>
   <p style="display:inline; color:black;"><input class="location-input" type="text" id="address" value="" placeholder="Zip/Address/City">
-    <button class="search-button" onclick="convertAddress()">Search</button>
+    <button class="search-button" onclick="convertAddress(false)">Search</button>
   </p>
 
 </div>
 
 <p class="location-center" style="margin-top: 10px; width: 230px;">
-  <button class="location-button" onclick="getLocation()">Use My Location</button>
+  <button class="location-button" onclick="getLocation(false)">Use My Location</button>
 </p>
 
 <hr>
 
 <div class="location-center" style="width:500px;">
   <p style="display:inline; margin-right:10px; color:black;">Recommendation:</p>
-  <p style="display:inline; color:black;"><input class="location-input" type="text" id="addie" value="" placeholder="Zip/Address/City">
-    <button class="search-button" onclick="convertAddress()">Search</button>
+  <p style="display:inline; color:black;"><input class="location-input" type="text" id="recommend_address" value="" placeholder="Zip/Address/City">
+    <button class="search-button" onclick="convertAddress(true)">Search</button>
   </p>
 
 </div>
 
 <p class="location-center" style="margin-top: 10px; width: 230px;">
-  <button class="location-button" onclick="getLocation()">Use My Location</button>
+  <button class="location-button" onclick="getLocation(true)">Use My Location</button>
 </p>
 
 <hr>
 
 <script>
-  function getLocation() {
+  function getLocation(recommend) {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
+      navigator.geolocation.getCurrentPosition(function (position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        console.log("User Coordinates: " + lat + ", " + lng);
+        httpGetAsync(lat, lng, recommend);
+      });
     } else {
       alert("Geolocation is not supported by this browser.");
     }
   }
-  function showPosition(position) {
-    var lat = position.coords.latitude;
-    var lng = position.coords.longitude;
-    console.log("User Coordinates: " + lat + ", " + lng);
-    httpGetAsync(lat, lng);
-  }
-  function convertAddress() {
+
+  function convertAddress(recommend) {
     var address = document.getElementById("address").value;
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode({'address': address}, function (results, status) {
@@ -65,7 +65,7 @@
         var lat = results[0].geometry.location.lat();
         var lng = results[0].geometry.location.lng();
         console.log("User Coordinates: " + lat + ", " + lng);
-        httpGetAsync(lat, lng);
+        httpGetAsync(lat, lng, recommend);
       }
     });
   }
@@ -167,11 +167,18 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 //    console.log(showtimes);
   }
 
-  function httpGetAsync(lat, lng) {
+  function displayRecommendation(showtimes, lat, lng) {
+    console.log("Recommendation");
+  }
+
+  function httpGetAsync(lat, lng, recommend) {
     console.log("hi!");
     var url = GET_REQUEST_URL(lat, lng);
     var callback = displayMovieShowtimes;
     var xmlHttp = new XMLHttpRequest();
+
+    if (recommend)
+      callback = displayRecommendation;
 
     xmlHttp.onreadystatechange = function () {
       if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
