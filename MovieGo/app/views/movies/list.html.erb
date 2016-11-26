@@ -79,6 +79,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 <script>
 
   var thumbnails = new Object();
+
   thumbnails["Inferno"] = "assets/posters/inferno.jpg";
   thumbnails["Keeping Up With the Joneses"] = "assets/posters/kuwtj.jpg";
   thumbnails["Jack Reacher: Never Go Back"] = "assets/posters/jackreacher.jpg"
@@ -155,12 +156,17 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     var count = 0;
     var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
 
+//    var pre = '<div class="card-deck-wrapper"> <div class="card-deck">';
+
+//    $(document.body).append(pre)
+
     $.each(result, function (index, movie) {
       var movieData = "";
       var imgsrc = thumbnails[movie.title];
 
       if (imgsrc == undefined)
         imgsrc = "assets/posters/smallberg.jpg"
+
 
       movieData += '<form method="post" action="map" class="inline">';
       movieData += '<input name="authenticity_token" type="hidden" value="' + AUTH_TOKEN + '">';
@@ -173,9 +179,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       movieData += '<button type="submit" class="link_button">'; //onclick="getMovieInfo(' + index + ')">'
 
-      movieData += '<div class="tile"><img style="height: 300px; width: 200px; object-fit: contain" src="' + imgsrc + '"><br/>';
-
-      movieData += '<p class="movie-title">' + movie.title + '</p>';
+      movieData += '<div class="card"><img class="card-img-top index-img" src="' + imgsrc + '"><br/>';
 
       movieData += "</div>";
       movieData += "</button>";
@@ -183,6 +187,9 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
       $(document.body).append(movieData);
       count++;
     });
+
+//    var post = '</div> </div>';
+//    $(document.body).append(post);
 
 //    console.log(showtimes);
   }

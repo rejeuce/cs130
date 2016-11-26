@@ -2,6 +2,32 @@
 // They will automatically be included in application.scss.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+@media only screen and (min-width : 601px) {
+  #user-widget-map {
+    position: absolute;
+    right: 420px;
+    top: 10px;
+    color: black;
+    font-size: 1.2em;
+  }
+}
+
+@media only screen and (max-width : 600px) {
+  #user-widget-map {
+    position:absolute;
+    top:2px;
+    left:40px;
+    color: black;
+    font-size: 1.2em;
+  }
+}
+
+#user-widget{
+  color: black;
+  font-size: 1.2em;
+}
+
+
 /* The side navigation menu */
 @media only screen and (max-width : 600px) {
   .sidenav {
