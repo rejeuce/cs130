@@ -52,7 +52,6 @@
     }
   }
   function showPosition(position) {
-    var x;
     var lat = position.coords.latitude;
     var lng = position.coords.longitude;
     console.log("User Coordinates: " + lat + ", " + lng);
@@ -61,7 +60,6 @@
   function convertAddress() {
     var address = document.getElementById("address").value;
     var geocoder = new google.maps.Geocoder();
-    var x;
     geocoder.geocode({'address': address}, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var lat = results[0].geometry.location.lat();
@@ -80,12 +78,12 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   var thumbnails = new Object();
   thumbnails["Inferno"] = "assets/inferno.jpg";
   thumbnails["Keeping Up With the Joneses"] = "assets/kuwtj.jpg";
-  thumbnails["Jack Reacher: Never Go Back"] = "assets/jackreacher.jpg"
-  thumbnails["The Accountant"] = "assets/accountant.jpg"
-  thumbnails["Doctor Strange 3D"] = "assets/drstrange.jpg"
-  thumbnails["Doctor Strange"] = "assets/drstrange.jpg"
-  thumbnails["Trolls"] = "assets/smallberg.jpg"
-  thumbnails["Hacksaw Ridge"] = "assets/hacksawridge.jpg"
+  thumbnails["Jack Reacher: Never Go Back"] = "assets/jackreacher.jpg";
+  thumbnails["The Accountant"] = "assets/accountant.jpg";
+  thumbnails["Doctor Strange 3D"] = "assets/drstrange.jpg";
+  thumbnails["Doctor Strange"] = "assets/drstrange.jpg";
+  thumbnails["Trolls"] = "assets/smallberg.jpg";
+  thumbnails["Hacksaw Ridge"] = "assets/hacksawridge.jpg";
 
   var RESPONSE_INFO = "";
 
@@ -96,7 +94,6 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
     console.log("Movie Title: " + result[movie_index].title);
 
-    //makePostRequest(JSON.stringify(movieInfo));
     return JSON.stringify(movieInfo);
   }
 
@@ -145,7 +142,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
       var imgsrc = thumbnails[movie.title];
 
       if (imgsrc == undefined)
-        imgsrc = "assets/smallberg.jpg"
+        imgsrc = "assets/smallberg.jpg";
 
       movieData += '<form method="post" action="map" class="inline">';
       movieData += '<input name="authenticity_token" type="hidden" value="' + AUTH_TOKEN + '">';
@@ -154,7 +151,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
       movieData += '<input type="hidden" name="latitude" value="' + lat + '">';
       movieData += '<input type="hidden" name="longitude" value="' + lng + '">';
 
-      movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
+      movieData += '<button type="submit" class="link_button">'; //onclick="getMovieInfo(' + index + ')">'
 
       movieData += '<div class="tile"><img style="height: 300px; width: 200px; object-fit: contain" src="' + imgsrc + '"><br/>';
 
@@ -180,7 +177,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
       if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
         callback(xmlHttp.responseText, lat, lng);
       }
-    }
+    };
     xmlHttp.open("GET", url, true);
     xmlHttp.send(null);
   }
