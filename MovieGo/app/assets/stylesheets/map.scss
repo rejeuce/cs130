@@ -3,17 +3,25 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 /* The side navigation menu */
-.sidenav {
-  height: 100%; /* 100% Full-height */
-  width: 400px; /* 0 width - change this with JavaScript */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Stay on top */
-  top: 0;
-  right: 0;
-  background-color: #111; /* Black*/
-  overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 20px; /* Place content 60px from the top */
-  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+@media only screen and (max-width : 600px) {
+  .sidenav {
+    display:none;
+  }
+}
+
+@media only screen and (min-width : 601px) {
+  .sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 400px; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0;
+    right: 0;
+    background-color: #111; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 20px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+  }
 }
 
 /* The navigation menu links */
@@ -41,17 +49,22 @@
 }
 
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
-#map {
-  height: 75%;
-  transition: margin-right .5s;
-  padding: 20px;
-  margin-right: 420px;
+
+@media only screen and (max-width : 600px) {
+  #map {
+    height: 75%;
+    transition: margin-right .5s;
+    padding: 20px;
+  }
 }
 
-/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+@media only screen and (min-width : 601px) {
+  #map {
+    height: 75%;
+    transition: margin-right .5s;
+    padding: 20px;
+    margin-right: 420px;
+  }
 }
 
  html, body {
