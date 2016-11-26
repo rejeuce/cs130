@@ -109,7 +109,8 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
   function GET_REQUEST_URL(lat, lng) {
 //    var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
-    var API_KEY = "un3bsktad33mj4s4tzpaym3u";
+    //var API_KEY = "un3bsktad33mj4s4tzpaym3u";
+    var API_KEY = "xmf8jaxmdfpucq8pqmt46xn6";
     var BASE_URL = "http://data.tmsapi.com/v1.1/movies/showings?startDate=";
 
     // get the current date
@@ -160,6 +161,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       movieData += '<input type="hidden" name="latitude" value="' + lat + '">';
       movieData += '<input type="hidden" name="longitude" value="' + lng + '">';
+      movieData += '<input type="hidden" name="movie_image" value="' + imgsrc + '">';
 
       movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
 

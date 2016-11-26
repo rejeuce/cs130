@@ -20,7 +20,10 @@
 
 
   <div id="content">
-    <h1 class="movie-info" style="color:white;"> <%= @title %></h1>
+
+    <img class="movie" src="<%= @movieImage %>">
+
+    <h1 class="movie-info movie-header"> <%= @title %></h1>
     <div id="bodyContent">
       <p class="movie-info">
         <span style="border: 1px solid white"> <%= @rating %> </span>

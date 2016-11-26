@@ -18,6 +18,7 @@ class MapController < ApplicationController
     @location = params[:location]
     @latitude = params[:latitude]
     @longitude = params[:longitude]
+    @movieImage = params[:movie_image]
 
     @showtimes = @parsed_json['showtimes']
     @description = @parsed_json['longDescription']
