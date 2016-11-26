@@ -29,6 +29,20 @@
 
 <hr>
 
+<div class="location-center" style="width:500px;">
+  <p style="display:inline; margin-right:10px; color:black;">Recommendation:</p>
+  <p style="display:inline; color:black;"><input class="location-input" type="text" id="addie" value="" placeholder="Zip/Address/City">
+    <button class="search-button" onclick="convertAddress()">Search</button>
+  </p>
+
+</div>
+
+<p class="location-center" style="margin-top: 10px; width: 230px;">
+  <button class="location-button" onclick="getLocation()">Use My Location</button>
+</p>
+
+<hr>
+
 <script>
   function getLocation() {
     if (navigator.geolocation) {
