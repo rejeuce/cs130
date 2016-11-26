@@ -27,7 +27,7 @@
   <button class="location-button" onclick="getLocation(false)">Use My Location</button>
 </p>
 <p class="location-center" style="margin-top: 10px; width: 230px; display: inline;">
-  <button class="location-button" onclick="getLocation(true)">Recommendation</button>
+  <button class="location-button" onclick="getRecommendation()">Recommendation</button>
 </p>
 
 <hr>
@@ -47,11 +47,7 @@
   }
 
   function convertAddress(recommend) {
-    var address;
-    if (recommend)
-      address = document.getElementById("recommend_address").value;
-    else
-      address = document.getElementById("address").value;
+    var address = document.getElementById("address").value;
 
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode({'address': address}, function (results, status) {
@@ -62,6 +58,15 @@
         httpGetAsync(lat, lng, recommend);
       }
     });
+  }
+
+  function getRecommendation() {
+    var address = document.getElementById("address").value;
+    console.log(address);
+    if (address)
+      convertAddress(true);
+    else
+      getLocation(true);
   }
 </script>
 
