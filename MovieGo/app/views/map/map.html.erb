@@ -3,364 +3,352 @@
 
 <!DOCTYPE html>
 <html>
-<head>
-  <title>MovieGo Map View</title>
-  <meta name="viewport" content="initial-scale=1.0">
-  <meta charset="utf-8">
-  <style>
-    #map {
-      height: 75%;
-    }
-
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
-    .fake-link {
-      color: red;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-<h2 style="color:black;">
+  <head>
+    <title>MovieGo Map View</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      #map {
+        height: 75%;
+      }
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .fake-link {
+        color: red;
+        font-weight: bold;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+  <h2 style="color:black;">
   Theaters showing <i><%= @title %></i>
-</h2>
-<div id="map"></div>
-<script>
+  </h2>
+  <div id="map"></div>
+  <script>
 
-  var USER_LOCATION = "";
-  var DIRECTIONS_SERVICE = "";
-  var DIRECTIONS_DISPLAY = "";
-  var DISTANCE_SERVICE = "";
+    var USER_LOCATION = "";
+    var DIRECTIONS_SERVICE = "";
+    var DIRECTIONS_DISPLAY = "";
+    var DISTANCE_SERVICE = "";
 
-  var TIMER_STORAGE = {};
+    var TIMER_STORAGE = {};
 
-  var PARSED_JSON = "";
+    function startTimer(duration, display) {
+      var timer = duration;
+      var minutes, seconds;
 
-  function startTimer(duration, display) {
-    var timer = duration;
-    var minutes, seconds;
+      return setInterval(function() {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
 
-    return setInterval(function () {
-      minutes = parseInt(timer / 60, 10);
-      seconds = parseInt(timer % 60, 10);
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
 
-      minutes = minutes < 10 ? "0" + minutes : minutes;
-      seconds = seconds < 10 ? "0" + seconds : seconds;
+        display.textContent = minutes + ":" + seconds;
 
-      display.textContent = minutes + ":" + seconds;
-
-      if (--timer < 0) {
-        timer = duration;
-      }
-
-    }, 1000);
-  }
-
-
-  function getTimeToArrival(origin, destination, etaElement, timeRemaining) {
-    DISTANCE_SERVICE.getDistanceMatrix({
-      origins: [origin],
-      destinations: [destination],
-      travelMode: 'DRIVING'
-    }, function (response, status) {
-      if (status === 'OK') {
-        var origins = response.originAddresses;
-
-        for (var i = 0; i < origins.length; i++) {
-          var results = response.rows[i].elements;
-          for (var j = 0; j < results.length; j++) {
-            var element = results[j];
-            var duration = element.duration.text;
-
-            duration = duration.replace("mins", "minutes");
-            duration = duration.replace("hrs", "hours");
-
-            var intDuration = parseInt(duration.replace("mins", "").replace("hrs", ""), 10);
-            if (timeRemaining < intDuration)
-              etaElement.style.color = "red";
-            else
-              etaElement.style.color = "green";
-
-            etaElement.textContent = duration;
-            return;
-          }
+        if (--timer < 0 ){
+          timer = duration;
         }
-      }
-    });
-  }
 
-  function displayDirections(directionsService, directionsDisplay, origin, destination) {
-    directionsService.route({
-      origin: origin,
-      destination: destination,
-      travelMode: 'DRIVING'
-    }, function (response, status) {
-      if (status === 'OK') {
-        directionsDisplay.setDirections(response);
-      } else {
-        console.log("Directions failed due to: " + status);
-      }
-    });
-  }
-
-  function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtimehr, showtimemin, tickets) {
-
-    var movieName = PARSED_JSON['title'];
-    var rating = PARSED_JSON['ratings'][0]['code'];
-    var year = PARSED_JSON['releaseYear'];
-    var genre = PARSED_JSON['genres'];
-    console.log("Movie stuff: " + movieName+year+genre);
-
-    var runtime = PARSED_JSON['runTime'];
-    runtime = runtime.replace("PT", "");
-    runtime = runtime.replace("H", " hours ");
-    runtime = runtime.replace("M", " minutes");
-    var description = PARSED_JSON['longDescription'];
-
-    if (showtimehr >= 13)
-      showtimehr -= 12;
-
-    var content = '<div id="content">' +
-        '<h1 style="color:black;">' + movieName + '</h1>' +
-        '<div id="bodyContent">' +
-        '<p><span style="border: 1px solid grey">' + rating + '</span> ' +
-        "  " + year + " | " +
-        genre.join("/") + " | " +
-        runtime +
-        '</p>' +
-        '<p>Showing at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
-        '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
-        'Right now, it would take you <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> to get there | ' +
-        '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
-        '<div style="margin-top=50px; margin-bottom=50px;" id="rightpanel' + theatreName.split(" ").join("") + '"></div>' +
-        '<p><i>' + description + "</i></p>" +
-        '</div>' +
-        '</div>';
-    console.log("Content: " + content);
-    return content;
-  }
-
-  function addMarker(coords, map, timeRemaining, theatreName, showtimehr, showtimemin, tickets) {
-    // add a marker onto the map at the position of 'coords' on the map 'map'
-    // use a custom marker icon 'markerImage'
-
-    // the image for the marker
-    // choose the correct timer image to use based on time remaining
-
-    var url = "assets/";
-
-    if (timeRemaining <= 5) {
-      url += "5mintimer.png";
-    }
-    else if (timeRemaining <= 10) {
-      url += "10mintimer.png";
-    }
-    else if (timeRemaining <= 15) {
-      url += "15mintimer.png";
-    }
-    else if (timeRemaining <= 20) {
-      url += "20mintimer.png";
-    }
-    else if (timeRemaining <= 25) {
-      url += "25mintimer.png";
-    }
-    else if (timeRemaining <= 30) {
-      url += "30mintimer.png";
-    }
-    else if (timeRemaining <= 35) {
-      url += "35mintimer.png";
-    }
-    else if (timeRemaining <= 40) {
-      url += "40mintimer.png";
-    }
-    else if (timeRemaining <= 45) {
-      url += "45mintimer.png";
-    }
-    else if (timeRemaining <= 50) {
-      url += "50mintimer.png";
-    }
-    else if (timeRemaining <= 55) {
-      url += "55mintimer.png";
-    }
-    else {
-      url += "60mintimer.png";
+      }, 1000);
     }
 
-    var markerImage = {
-      url: url,
-      scaledSize: new google.maps.Size(75, 75)
-    };
 
-    var userLocationMarker = {
-      url: "assets/youarehere.png",
-      scaledSize: new google.maps.Size(41, 69) // he he
-    };
+    function getTimeToArrival(origin, destination, etaElement, timeRemaining) {
+      DISTANCE_SERVICE.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: 'DRIVING'
+      }, function(response, status) {
+        if (status === 'OK') {
+          var origins = response.originAddresses;
 
-    if (timeRemaining == -1) {
-      var marker = new google.maps.Marker({
-        position: coords,
-        map: map,
-        icon: userLocationMarker
-      });
-    }
-    else {
-      var marker = new google.maps.Marker({
-        position: coords,
-        map: map,
-        icon: markerImage
-      });
+          for (var i = 0; i < origins.length; i++) {
+            var results = response.rows[i].elements;
+            for (var j = 0; j < results.length; j++) {
+              var element = results[j];
+              var duration = element.duration.text;
 
-      var infowindow = new google.maps.InfoWindow({
-        content: getInfoWindowHTML(timeRemaining, theatreName, coords, showtimehr, showtimemin, tickets)
-      });
+              duration = duration.replace("mins", "minutes");
+              duration = duration.replace("hrs", "hours");
 
-      marker.addListener('click', function () {
-        infowindow.open(map, marker);
-        var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
-        var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
-        directionsButton.addEventListener('click', function () {
-          DIRECTIONS_DISPLAY.setPanel(document.querySelector("#rightpanel" + theatreName.split(" ").join("")));
-          displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
-        });
+              var intDuration = parseInt(duration.replace("mins", "").replace("hrs", ""), 10);
+              if (timeRemaining < intDuration)
+                etaElement.style.color = "red";
+              else
+                etaElement.style.color = "green";
 
-        if (!TIMER_STORAGE.hasOwnProperty(theatreName.split(" ").join("")))
-          TIMER_STORAGE[theatreName.split(" ").join("")] = startTimer(timeRemaining * 60, display);
-
-        var etaDisplay = document.querySelector("#eta" + theatreName.split(" ").join(""));
-        getTimeToArrival(USER_LOCATION, coords, etaDisplay, timeRemaining);
-      });
-
-      infowindow.addListener('closeclick', function () {
-        console.log("close window");
-        infowindow.close();
-        // remove directions overlay
-        DIRECTIONS_DISPLAY.setDirections({routes: []});
-      });
-
-    }
-
-    console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
-  }
-
-  function addTheatresToMap(map, showtimes, count, alreadyAdded) {
-
-    if (showtimes == null)
-      return;
-
-    if (count == showtimes.length)
-      return;
-
-    var showtime = showtimes[count];
-    var theatreName = (showtime["theatre"]["name"]).replace(/\d+$/, "");
-    var theatreID = showtime["theatre"]["id"];
-    var movieTime = showtime["dateTime"];
-    var tickets = showtime["ticketURI"];
-
-    console.log(showtime);
-    console.log("Count: " + count);
-    console.log(alreadyAdded);
-    console.log(theatreName);
-    console.log(theatreID);
-    console.log(movieTime);
-
-    var currentDate = new Date();
-    var hours = currentDate.getHours();
-    var minutes = currentDate.getMinutes();
-
-    var showtimeHours = (((movieTime.split("T"))[1]).split(":"))[0];
-    console.log("Showtime Hours: " + showtimeHours);
-    var showtimeMinutes = (((movieTime.split("T"))[1]).split(":"))[1];
-    console.log("Showtime Minutes: " + showtimeMinutes);
-
-    var timeRemaining = (showtimeHours - hours) * 60 + (showtimeMinutes - minutes);
-    console.log("Time Remaining: " + timeRemaining);
-
-    if (alreadyAdded.indexOf(theatreID) >= 0 || timeRemaining <= 0) {
-      addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
-    }
-    else {
-      var service = new google.maps.places.PlacesService(map);
-      service.textSearch({'query': theatreName}, function (results, status) {
-        if (status == google.maps.places.PlacesServiceStatus.OK) {
-          if (results.length > 0) {
-            var lati = results[0].geometry.location.lat();
-            var longi = results[0].geometry.location.lng();
-            var coords = {lat: lati, lng: longi};
-
-            console.log(JSON.stringify(coords, null, 4));
-            if (alreadyAdded.indexOf(theatreID) == -1) {
-              addMarker(coords, map, timeRemaining, theatreName, showtimeHours, showtimeMinutes, tickets);
-              alreadyAdded.push(theatreID);
+              etaElement.textContent = duration;
+              return;
             }
           }
         }
-
-        addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
       });
     }
-  }
+
+    function displayDirections(directionsService, directionsDisplay, origin, destination) {
+      directionsService.route({
+        origin: origin,
+        destination: destination,
+        travelMode: 'DRIVING'
+      }, function(response, status) {
+        if (status === 'OK') {
+          directionsDisplay.setDirections(response);
+        } else {
+          console.log("Directions failed due to: " + status);
+        }
+      });
+    }
+
+    function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtimehr, showtimemin, tickets) {
+      var movieName = '<%= @title %>';
+      var rating = '<%= @rating %>';
+      var year = '<%= @year %>';
+      var genre = '<%= raw @genres.to_json %>';
+      genre = JSON.parse(genre);
+      var runtime = '<%= @runtime %>';
+      runtime = runtime.replace("PT", "");
+      runtime = runtime.replace("H", " hours ");
+      runtime = runtime.replace("M", " minutes");
+      var description = '<%= @description %>';
+
+      if (showtimehr >= 13)
+        showtimehr -= 12;
+
+      var content = '<div id="content">' +
+      '<h1 style="color:black;">' + movieName + '</h1>' +
+      '<div id="bodyContent">' +
+      '<p><span style="border: 1px solid grey">' + rating + '</span> ' + 
+      "  " + year + " | " +
+      genre.join("/") + " | " +
+      runtime +
+      '</p>' +
+      '<p>Showing at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
+      '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
+      'Right now, it would take you <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> to get there | ' +
+      '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
+      '<div style="margin-top=50px; margin-bottom=50px;" id="rightpanel' + theatreName.split(" ").join("") + '"></div>' +
+      '<p><i>' + description + "</i></p>" +
+      '</div>' +
+      '</div>';
+      console.log(content);
+      return content;
+    }
+
+    function addMarker(coords, map, timeRemaining, theatreName, showtimehr, showtimemin, tickets) {
+      // add a marker onto the map at the position of 'coords' on the map 'map'
+      // use a custom marker icon 'markerImage'
+
+      // the image for the marker
+      // choose the correct timer image to use based on time remaining
+
+      var url = "assets/";
+
+      if (timeRemaining <= 5) {
+        url += "5mintimer.png";
+      }
+      else if (timeRemaining <= 10) {
+        url += "10mintimer.png";
+      }
+      else if (timeRemaining <= 15) {
+        url += "15mintimer.png";
+      }
+      else if (timeRemaining <= 20) {
+        url += "20mintimer.png";
+      }
+      else if (timeRemaining <= 25) {
+        url += "25mintimer.png";
+      }
+      else if (timeRemaining <= 30) {
+        url += "30mintimer.png";
+      }
+      else if (timeRemaining <= 35) {
+        url += "35mintimer.png";
+      }
+      else if (timeRemaining <= 40) {
+        url += "40mintimer.png";
+      }
+      else if (timeRemaining <= 45) {
+        url += "45mintimer.png";
+      }
+      else if (timeRemaining <= 50) {
+        url += "50mintimer.png";
+      }
+      else if (timeRemaining <= 55) {
+        url += "55mintimer.png";
+      }
+      else {
+        url += "60mintimer.png";
+      }
+
+      var markerImage = {
+        url: url,
+        scaledSize: new google.maps.Size(75, 75)
+      };
+
+      var userLocationMarker = {
+        url: "assets/youarehere.png",
+        scaledSize: new google.maps.Size(41, 69) // he he
+      };
+
+      if (timeRemaining == -1) {
+        var marker = new google.maps.Marker({
+          position: coords,
+          map: map,
+          icon: userLocationMarker
+        });
+      }
+      else {
+        var marker = new google.maps.Marker({
+          position: coords,
+          map: map,
+          icon: markerImage
+        });
+
+        var infowindow = new google.maps.InfoWindow({
+          content: getInfoWindowHTML(timeRemaining, theatreName, coords, showtimehr, showtimemin, tickets)
+        });
+
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+          var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
+          var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
+          directionsButton.addEventListener('click', function() {
+            DIRECTIONS_DISPLAY.setPanel(document.querySelector("#rightpanel" + theatreName.split(" ").join("")));
+            displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
+          });
+
+          if (!TIMER_STORAGE.hasOwnProperty(theatreName.split(" ").join("")))
+            TIMER_STORAGE[theatreName.split(" ").join("")] = startTimer(timeRemaining * 60, display); 
+
+          var etaDisplay = document.querySelector("#eta" + theatreName.split(" ").join(""));
+          getTimeToArrival(USER_LOCATION, coords, etaDisplay, timeRemaining);
+        });
+
+        infowindow.addListener('closeclick', function() {
+            console.log("close window");
+            infowindow.close();
+            // remove directions overlay
+            DIRECTIONS_DISPLAY.setDirections({routes: []});
+        });
+
+      }
+
+      console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
+    }
+
+    function addTheatresToMap(map, showtimes, count, alreadyAdded) {
+
+      if (showtimes == null)
+        return;
+
+      if (count == showtimes.length)
+        return;
+
+      var showtime = showtimes[count];
+      var theatreName = (showtime["theatre"]["name"]).replace(/\d+$/, "");
+      var theatreID = showtime["theatre"]["id"];
+      var movieTime = showtime["dateTime"];
+      var tickets = showtime["ticketURI"];
+
+      console.log(showtime);
+      console.log("Count: " + count);
+      console.log(alreadyAdded);
+      console.log(theatreName);
+      console.log(theatreID);
+      console.log(movieTime);
+
+      var currentDate = new Date();
+      var hours = currentDate.getHours();
+      var minutes = currentDate.getMinutes();
+
+      var showtimeHours = (((movieTime.split("T"))[1]).split(":"))[0];
+      console.log("Showtime Hours: " + showtimeHours);
+      var showtimeMinutes = (((movieTime.split("T"))[1]).split(":"))[1];
+      console.log("Showtime Minutes: " + showtimeMinutes);
+
+      var timeRemaining = (showtimeHours - hours) * 60 + (showtimeMinutes - minutes);
+      console.log("Time Remaining: " + timeRemaining);
+
+      if (alreadyAdded.indexOf(theatreID) >= 0 || timeRemaining <= 0) {
+        addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
+      }
+      else {
+        var service = new google.maps.places.PlacesService(map);
+        service.textSearch({'query': theatreName}, function (results, status) {
+          if (status == google.maps.places.PlacesServiceStatus.OK) {
+              if (results.length > 0) {
+              var lati = results[0].geometry.location.lat();
+              var longi = results[0].geometry.location.lng();
+              var coords = {lat: lati, lng: longi};
+
+              console.log(JSON.stringify(coords, null, 4));
+              if (alreadyAdded.indexOf(theatreID) == -1) {
+                addMarker(coords, map, timeRemaining, theatreName, showtimeHours, showtimeMinutes, tickets);
+                alreadyAdded.push(theatreID);
+              }
+            }
+          }
+
+          addTheatresToMap(map, showtimes, count + 1, alreadyAdded);
+        });
+      }
+    }
 
 
-  function drawMap(mapCenter) {
-    // set the map to center on the 'mapCenter', and the zoom level
-    // higher zoom means closer
-    console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
-    USER_LOCATION = mapCenter;
+    function drawMap(mapCenter) {
+      // set the map to center on the 'mapCenter', and the zoom level
+      // higher zoom means closer
+      console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
+      USER_LOCATION = mapCenter;
 
-    // init the map
-    var map = new google.maps.Map(document.getElementById('map'), {
-      center: mapCenter,
-      zoom: 13
-    });
+      // init the map
+      var map = new google.maps.Map(document.getElementById('map'), {
+        center: mapCenter,
+        zoom: 13
+      });
 
-    // init directions services
-    DIRECTIONS_SERVICE = new google.maps.DirectionsService();
-    DIRECTIONS_DISPLAY = new google.maps.DirectionsRenderer({suppressMarkers: true});
-    DIRECTIONS_DISPLAY.setMap(map);
+      // init directions services
+      DIRECTIONS_SERVICE = new google.maps.DirectionsService();
+      DIRECTIONS_DISPLAY = new google.maps.DirectionsRenderer({suppressMarkers: true});
+      DIRECTIONS_DISPLAY.setMap(map);
 
-    // init distance matrix service
-    DISTANCE_SERVICE = new google.maps.DistanceMatrixService();
+      // init distance matrix service
+      DISTANCE_SERVICE = new google.maps.DistanceMatrixService();
 
-    // place a marker for the user's position
-    addMarker(mapCenter, map, -1, "User's Location", "00", "00", "www.google.com");
+      // place a marker for the user's position
+      addMarker(mapCenter, map, -1, "User's Location", "00", "00", "www.google.com");
 
-    // start to draw timers for the movies by getting the movie info from the controller
-    getMovieInfo(map);
-  }
+      // start to draw timers for the movies by getting the movie info from the controller
+      getMovieInfo(map);
+    }
 
 
-  function getMovieInfo(map) {
-    // get the movie info from the map controller
-    // and parse it into a JSON dictionary
+    function getMovieInfo(map) {
+      // get the movie info from the map controller
+      // and parse it into a JSON dictionary
+      var showtimes = '<%= raw @showtimes.to_json %>';
+      showtimes = JSON.parse(showtimes);
+      console.log("Showtimes in JS: " + JSON.stringify(showtimes, null, 4));
 
-    var json = '<%= @parsed_json %>';
-    json = json.replace(/&quot;/g, '"');
-    json = json.replace(/=&gt;/g, ':');
-    console.log("Cleaned JSON: " + json);
-    PARSED_JSON = JSON.parse(json);
+      var alreadyAdded = [];
+      addTheatresToMap(map, showtimes, 0, alreadyAdded);
+    }
 
-    var showtimes = PARSED_JSON['showtimes'];
-    console.log("Showtimes in JS: " + JSON.stringify(showtimes, null, 4));
-
-    var alreadyAdded = [];
-    addTheatresToMap(map, showtimes, 0, alreadyAdded);
-  }
-
-  function initMap() {
-    // center the map location on the user's location
-    // use the users location as the map center
-    var userLatitude = parseFloat('<%= @latitude %>');
-    var userLongitude = parseFloat('<%= @longitude %>');
-    console.log("User Coordinates: " + userLatitude + ", " + userLongitude);
-    var coords = {lat: userLatitude, lng: userLongitude};
-    drawMap(coords);
-  }
-</script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap&libraries=places" async defer></script>
-</body>
+    function initMap() {
+      // center the map location on the user's location
+      // use the users location as the map center
+      var userLatitude = parseFloat('<%= @latitude %>');
+      var userLongitude = parseFloat('<%= @longitude %>');
+      console.log("User Coordinates: " + userLatitude + ", " + userLongitude);
+      var coords = {lat: userLatitude, lng: userLongitude};
+      drawMap(coords);
+    }
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap&libraries=places" async defer></script>
+  </body>
 </html>
