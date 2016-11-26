@@ -89,26 +89,6 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
   var RESPONSE_INFO = "";
 
-  function makePostRequest(payload) {
-
-    console.log("Payload: " + payload);
-    $.ajax({
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
-      },
-      url: 'map',
-      type: 'POST',
-      data: JSON.stringify(payload),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      async: true,
-      success: function (msg) {
-        window.location.href = "/map";
-        //alert(msg);
-      }
-    });
-  }
-
   function getMovieInfo(movie_index) {
     console.log("Movie Index: " + movie_index);
     var result = JSON.parse(RESPONSE_INFO);
@@ -119,7 +99,6 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     //makePostRequest(JSON.stringify(movieInfo));
     return JSON.stringify(movieInfo);
   }
-
 
   function GET_REQUEST_URL(lat, lng) {
 //    var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
