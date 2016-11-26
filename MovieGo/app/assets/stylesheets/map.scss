@@ -53,3 +53,26 @@
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
+
+ html, body {
+   height: 100%;
+   margin: 0;
+   padding: 0;
+ }
+.fake-link {
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.movie-info {
+  margin-left: 15px;
+}
+
+div.directions {
+  background-color: white;
+  border: none;
+  margin-top: 20px;
+  margin-left: 15px;
+  margin-right: 15px;
+}
