@@ -24,6 +24,14 @@
       margin-left: 15px;
     }
 
+      div.directions {
+        background-color: white;
+        border: none;
+        margin-top: 20px;
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+
   </style>
 </head>
 <body>
@@ -54,7 +62,9 @@
         | <%= @displayTime %>
       </p>
 
-      <p class="movie-info"><i><%= @description %></i></p>
+      <p id="movie-description" class="movie-info"><i><%= @description %></i></p>
+
+      <div class="directions" id="movie-directions" style="display:none;"></div>
 
     </div>
   </div>
@@ -76,6 +86,7 @@
   var TIMER_STORAGE = {};
 
   var ALL_INFO_WINDOWS = [];
+  var ALL_MARKERS = [];
 
   function startTimer(duration, display) {
     var timer = duration;
@@ -156,7 +167,6 @@
         '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
         'Right now, it would take you <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> to get there | ' +
         '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
-        '<div style="margin-top=50px; margin-bottom=50px;" id="rightpanel' + theatreName.split(" ").join("") + '"></div>' +
         '</div>' +
         '</div>';
     console.log(content);
@@ -232,21 +242,28 @@
         map: map
       });
 
+      // Infowindow to show just the timer.
       var timerwindow = new google.maps.InfoWindow({
         content: '<div><p><b><span id="timer1' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span></b></p><div>'
       });
 
+      // store the timerwindows so that we can close/open them again later.
       timerwindow.open(map, marker);
       ALL_INFO_WINDOWS.push(timerwindow);
+      ALL_MARKERS.push(marker);
+
+      // function to allow the timer to tick on view
       var timer = document.querySelector("#timer1" + theatreName.split(" ").join(""));
       startTimer(timeRemaining * 60, timer);
 
+      // infowindow is the Infowindow that shows up when a theater is directly clicked on.
       var infowindow = new google.maps.InfoWindow({
         content: getInfoWindowHTML(timeRemaining, theatreName, coords, showtimehr, showtimemin, tickets)
       });
 
       marker.addListener('click', function() {
 
+        // Close all timer infowindows.
         for(var i = 0; i < ALL_INFO_WINDOWS.length; i++) {
           ALL_INFO_WINDOWS[i].close();
         }
@@ -256,7 +273,12 @@
         var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
         var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
         directionsButton.addEventListener('click', function() {
-          DIRECTIONS_DISPLAY.setPanel(document.querySelector("#rightpanel" + theatreName.split(" ").join("")));
+
+          // Replace the description in the sidebar with the directions to movie.
+          document.getElementById("movie-description").style.display = "none";
+          document.getElementById("movie-directions").style.display = "block";
+
+          DIRECTIONS_DISPLAY.setPanel(document.getElementById("movie-directions"));
           displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
         });
 
@@ -270,6 +292,15 @@
       infowindow.addListener('closeclick', function() {
         console.log("close window");
         infowindow.close();
+
+        // reopen all timer windows
+        for(var i = 0; i < ALL_INFO_WINDOWS.length; i++) {
+          ALL_INFO_WINDOWS[i].open(map, ALL_MARKERS[i]);
+        }
+
+        // if needed, switch back the description in the side panel.
+        document.getElementById("movie-description").style.display = "block";
+        document.getElementById("movie-directions").style.display = "none";
 
         // remove directions overlay
         DIRECTIONS_DISPLAY.setDirections({routes: []});
