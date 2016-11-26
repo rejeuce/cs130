@@ -58,7 +58,12 @@
   }
 
   function convertAddress(recommend) {
-    var address = document.getElementById("address").value;
+    var address;
+    if (recommend)
+      address = document.getElementById("recommend_address").value;
+    else
+      address = document.getElementById("address").value;
+
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode({'address': address}, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
