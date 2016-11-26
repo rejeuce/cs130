@@ -6,40 +6,7 @@
   <meta charset="utf-8">
   <%= csrf_meta_tag %>
 
-  <style>
-    .tile {
-      display: inline-block;
-      border: 1px solid grey;
-      background: silver;
-      padding: 4px;
-      text-align: center;
-      font-size: 15px;
-      width: 250px;
-    }
 
-    .inline {
-      display: inline;
-    }
-
-    .link-button {
-      background: none;
-      border: none;
-      color: blue;
-      text-decoration: underline;
-      cursor: pointer;
-      font-size: 1em;
-      font-family: serif;
-    }
-
-    .link-button:focus {
-      outline: none;
-    }
-
-    .link-button:active {
-      color: red;
-    }
-
-  </style>
 
 </head>
 
@@ -47,13 +14,20 @@
 <%= render 'shared/navigation' %>
 
 <body>
-<p>Use My Location
-  <button onclick="getLocation()">OK</button>
+
+<div class="location-center" style="width:500px;">
+  <p style="display:inline; margin-right:10px; color:black;">Find Movies Near You:</p>
+  <p style="display:inline; color:black;"><input class="location-input" type="text" id="address" value="" placeholder="Zip/Address/City">
+    <button class="search-button" onclick="convertAddress()">Search</button>
+  </p>
+
+</div>
+
+<p class="location-center" style="margin-top: 10px; width: 230px;">
+  <button class="location-button" onclick="getLocation()">Use My Location</button>
 </p>
 
-<p><input type="text" id="address" value="">
-  <button onclick="convertAddress()">Search</button>
-</p>
+<hr>
 
 <script>
   function getLocation() {
@@ -189,9 +163,9 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
 
-      movieData += '<div class="tile"><img style="height: 100%; width: 100%; object-fit: contain" src="' + imgsrc + '"><br/>';
+      movieData += '<div class="tile"><img style="height: 300px; width: 200px; object-fit: contain" src="' + imgsrc + '"><br/>';
 
-      movieData += movie.title;
+      movieData += '<p class="movie-title">' + movie.title + '</p>';
 
       movieData += "</div>";
       movieData += "</button>";
@@ -219,6 +193,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A" async defer></script>
+
 
 </body>
 </html>

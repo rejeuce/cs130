@@ -9,27 +9,39 @@
     <meta charset="utf-8">
     <style>
       #map {
-        height: 100%;
+        height: 75%;
       }
       html, body {
         height: 100%;
         margin: 0;
         padding: 0;
       }
+      .fake-link {
+        color: red;
+        font-weight: bold;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
   <h2 style="color:black;">
-  Theaters showing <%= @title %>
+  Theaters showing <i><%= @title %></i>
   </h2>
   <div id="map"></div>
   <script>
+
+    var USER_LOCATION = "";
+    var DIRECTIONS_SERVICE = "";
+    var DIRECTIONS_DISPLAY = "";
+    var DISTANCE_SERVICE = "";
+
+    var TIMER_STORAGE = {};
 
     function startTimer(duration, display) {
       var timer = duration;
       var minutes, seconds;
 
-      setInterval(function() {
+      return setInterval(function() {
         minutes = parseInt(timer / 60, 10);
         seconds = parseInt(timer % 60, 10);
 
@@ -43,6 +55,53 @@
         }
 
       }, 1000);
+    }
+
+
+    function getTimeToArrival(origin, destination, etaElement, timeRemaining) {
+      DISTANCE_SERVICE.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: 'DRIVING'
+      }, function(response, status) {
+        if (status === 'OK') {
+          var origins = response.originAddresses;
+
+          for (var i = 0; i < origins.length; i++) {
+            var results = response.rows[i].elements;
+            for (var j = 0; j < results.length; j++) {
+              var element = results[j];
+              var duration = element.duration.text;
+
+              duration = duration.replace("mins", "minutes");
+              duration = duration.replace("hrs", "hours");
+
+              var intDuration = parseInt(duration.replace("mins", "").replace("hrs", ""), 10);
+              if (timeRemaining < intDuration)
+                etaElement.style.color = "red";
+              else
+                etaElement.style.color = "green";
+
+              etaElement.textContent = duration;
+              return;
+            }
+          }
+        }
+      });
+    }
+
+    function displayDirections(directionsService, directionsDisplay, origin, destination) {
+      directionsService.route({
+        origin: origin,
+        destination: destination,
+        travelMode: 'DRIVING'
+      }, function(response, status) {
+        if (status === 'OK') {
+          directionsDisplay.setDirections(response);
+        } else {
+          console.log("Directions failed due to: " + status);
+        }
+      });
     }
 
     function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtimehr, showtimemin, tickets) {
@@ -68,8 +127,11 @@
       genre.join("/") + " | " +
       runtime +
       '</p>' +
-      '<p>Showing at ' + theatreName + ' at ' + showtimehr + ":" + showtimemin + ' | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
-      '<p>Time Remaining: <span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes</p>' +
+      '<p>Showing at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
+      '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
+      'Right now, it would take you <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> to get there | ' +
+      '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
+      '<div style="margin-top=50px; margin-bottom=50px;" id="rightpanel' + theatreName.split(" ").join("") + '"></div>' +
       '<p><i>' + description + "</i></p>" +
       '</div>' +
       '</div>';
@@ -154,8 +216,26 @@
         marker.addListener('click', function() {
           infowindow.open(map, marker);
           var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
-          startTimer(timeRemaining * 60, display); 
+          var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
+          directionsButton.addEventListener('click', function() {
+            DIRECTIONS_DISPLAY.setPanel(document.querySelector("#rightpanel" + theatreName.split(" ").join("")));
+            displayDirections(DIRECTIONS_SERVICE, DIRECTIONS_DISPLAY, USER_LOCATION, coords);
+          });
+
+          if (!TIMER_STORAGE.hasOwnProperty(theatreName.split(" ").join("")))
+            TIMER_STORAGE[theatreName.split(" ").join("")] = startTimer(timeRemaining * 60, display); 
+
+          var etaDisplay = document.querySelector("#eta" + theatreName.split(" ").join(""));
+          getTimeToArrival(USER_LOCATION, coords, etaDisplay, timeRemaining);
         });
+
+        infowindow.addListener('closeclick', function() {
+            console.log("close window");
+            infowindow.close();
+            // remove directions overlay
+            DIRECTIONS_DISPLAY.setDirections({routes: []});
+        });
+
       }
 
       console.log("Adding marker for " + theatreName + " with coords " + JSON.stringify(coords, null, 4));
@@ -224,11 +304,21 @@
       // set the map to center on the 'mapCenter', and the zoom level
       // higher zoom means closer
       console.log("Map Center Coords: " + JSON.stringify(mapCenter, null, 4));
+      USER_LOCATION = mapCenter;
 
+      // init the map
       var map = new google.maps.Map(document.getElementById('map'), {
         center: mapCenter,
         zoom: 13
       });
+
+      // init directions services
+      DIRECTIONS_SERVICE = new google.maps.DirectionsService();
+      DIRECTIONS_DISPLAY = new google.maps.DirectionsRenderer({suppressMarkers: true});
+      DIRECTIONS_DISPLAY.setMap(map);
+
+      // init distance matrix service
+      DISTANCE_SERVICE = new google.maps.DistanceMatrixService();
 
       // place a marker for the user's position
       addMarker(mapCenter, map, -1, "User's Location", "00", "00", "www.google.com");
@@ -249,6 +339,13 @@
       addTheatresToMap(map, showtimes, 0, alreadyAdded);
     }
 
+
+    function getUserLocation() {
+      // get the user location from the map controller
+      var userLocation = '<%= @location %>';
+      console.log("User Location: " + userLocation);
+
+    }
 
     function initMap() {
       // center the map location on the user's location
