@@ -91,7 +91,6 @@
     }, 1000);
   }
 
-
   function getTimeToArrival(origin, destination, etaElement, timeRemaining) {
     DISTANCE_SERVICE.getDistanceMatrix({
       origins: [origin],
@@ -139,7 +138,7 @@
   }
 
   function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtimehr, showtimemin, tickets) {
-    var movieName = '<%= @title %>';
+    var movieName = '<%= @parsed_json %>'['title'];
 
     if (showtimehr >= 13)
       showtimehr -= 12;
@@ -399,14 +398,6 @@
 
     var alreadyAdded = [];
     addTheatresToMap(map, showtimes, 0, alreadyAdded);
-  }
-
-
-  function getUserLocation() {
-    // get the user location from the map controller
-    var userLocation = '<%= @location %>';
-    console.log("User Location: " + userLocation);
-
   }
 
   function initMap() {
