@@ -17,6 +17,7 @@ class MapController < ApplicationController
 
     @latitude = params[:latitude]
     @longitude = params[:longitude]
+    @recommend = params[:recommend]
 
     @showtimes = @parsed_json['showtimes']
     @description = @parsed_json['longDescription']

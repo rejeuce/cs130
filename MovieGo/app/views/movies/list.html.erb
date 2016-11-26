@@ -7,7 +7,6 @@
   <%= csrf_meta_tag %>
 
 
-
 </head>
 
 <%= render 'shared/header' %>
@@ -17,7 +16,8 @@
 
 <div class="location-center" style="width:500px;">
   <p style="display:inline; margin-right:10px; color:black;">Find Movies Near You:</p>
-  <p style="display:inline; color:black;"><input class="location-input" type="text" id="address" value="" placeholder="Zip/Address/City">
+  <p style="display:inline; color:black;">
+    <input class="location-input" type="text" id="address" value="" placeholder="Zip/Address/City">
     <button class="search-button" onclick="convertAddress(false)">Search</button>
   </p>
 
@@ -31,7 +31,8 @@
 
 <div class="location-center" style="width:500px;">
   <p style="display:inline; margin-right:10px; color:black;">Recommendation:</p>
-  <p style="display:inline; color:black;"><input class="location-input" type="text" id="recommend_address" value="" placeholder="Zip/Address/City">
+  <p style="display:inline; color:black;">
+    <input class="location-input" type="text" id="recommend_address" value="" placeholder="Zip/Address/City">
     <button class="search-button" onclick="convertAddress(true)">Search</button>
   </p>
 
@@ -155,6 +156,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       movieData += '<input type="hidden" name="latitude" value="' + lat + '">';
       movieData += '<input type="hidden" name="longitude" value="' + lng + '">';
+      movieData += '<input type="hidden" name="recommend" value="false">';
 
       movieData += '<button type="submit" class="link_button">'; //onclick="getMovieInfo(' + index + ')">'
 
@@ -174,6 +176,49 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
   function displayRecommendation(showtimes, lat, lng) {
     console.log("Recommendation");
+
+    var result = JSON.parse(showtimes);
+
+    // assign response to global variable, so we can access movie information
+    // after a button click
+    RESPONSE_INFO = showtimes;
+
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "map");
+
+    var hiddenField;
+
+    // movie info
+    hiddenField= document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "movie_info");
+    hiddenField.setAttribute("value", encodeURIComponent(JSON.stringify(result)));
+    form.appendChild(hiddenField);
+
+    // latitude
+    hiddenField= document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "latitude");
+    hiddenField.setAttribute("value", lat);
+    form.appendChild(hiddenField);
+
+    // longitude
+    hiddenField = document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "longitude");
+    hiddenField.setAttribute("value", lng);
+    form.appendChild(hiddenField);
+
+    // recommend
+    hiddenField = document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "longitude");
+    hiddenField.setAttribute("value", "true");
+    form.appendChild(hiddenField);
+
+    document.body.appendChild(form);
+    form.submit();
   }
 
   function httpGetAsync(lat, lng, recommend) {
