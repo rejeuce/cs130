@@ -39,7 +39,7 @@
 </div>
 
 <p class="location-center" style="margin-top: 10px; width: 230px;">
-  <button class="location-button" onclick="getLocation(true)">Use My Location</button>
+  <button class="location-button" onclick="getLocation(true)">Recommendation</button>
 </p>
 
 <hr>
@@ -94,19 +94,17 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   var RESPONSE_INFO = "";
 
   function getMovieInfo(movie_index) {
-    console.log("Movie Index: " + movie_index);
     var result = JSON.parse(RESPONSE_INFO);
     var movieInfo = result[movie_index];
 
-    console.log("Movie Title: " + result[movie_index].title);
-
+    console.log(movie_index + " Movie: " + result[movie_index].rootId + ", " + result[movie_index].title);
     return JSON.stringify(movieInfo);
   }
 
   function GET_REQUEST_URL(lat, lng) {
 //    var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
-//    var API_KEY = "un3bsktad33mj4s4tzpaym3u";
-    var API_KEY = "xmf8jaxmdfpucq8pqmt46xn6";
+    var API_KEY = "un3bsktad33mj4s4tzpaym3u";
+//    var API_KEY = "xmf8jaxmdfpucq8pqmt46xn6";
     var BASE_URL = "http://data.tmsapi.com/v1.1/movies/showings?startDate=";
 
     // get the current date
@@ -180,10 +178,12 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     console.log("Recommendation");
 
     var result = JSON.parse(showtimes);
+    var INDEX = 0;
 
     // assign response to global variable, so we can access movie information
     // after a button click
     RESPONSE_INFO = showtimes;
+    var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
 
     var form = document.createElement("form");
     form.setAttribute("method", "post");
@@ -191,11 +191,18 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
     var hiddenField;
 
+    // auth token
+    hiddenField= document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "authenticity_token");
+    hiddenField.setAttribute("value", AUTH_TOKEN);
+    form.appendChild(hiddenField);
+
     // movie info
     hiddenField= document.createElement("input");
     hiddenField.setAttribute("type", "hidden");
     hiddenField.setAttribute("name", "movie_info");
-    hiddenField.setAttribute("value", encodeURIComponent(JSON.stringify(result)));
+    hiddenField.setAttribute("value", encodeURIComponent(getMovieInfo(INDEX)));
     form.appendChild(hiddenField);
 
     // latitude
@@ -215,8 +222,21 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     // recommend
     hiddenField = document.createElement("input");
     hiddenField.setAttribute("type", "hidden");
-    hiddenField.setAttribute("name", "longitude");
+    hiddenField.setAttribute("name", "recommend");
     hiddenField.setAttribute("value", "true");
+    form.appendChild(hiddenField);
+
+    // image
+    var result = JSON.parse(RESPONSE_INFO);
+    var movie = result[INDEX];
+    var imgsrc = thumbnails[movie.title];
+    if (imgsrc == undefined)
+      imgsrc = "assets/smallberg.jpg";
+
+    hiddenField = document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "movie_image");
+    hiddenField.setAttribute("value", imgsrc);
     form.appendChild(hiddenField);
 
     document.body.appendChild(form);

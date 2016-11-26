@@ -138,14 +138,14 @@
   }
 
   function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtimehr, showtimemin, tickets) {
-    var movieName = '<%= @parsed_json %>'['title'];
+    var movieName = '<%= @title %>';
 
     if (showtimehr >= 13)
       showtimehr -= 12;
 
     var content = '<div id="content">' +
         '<div id="bodyContent">' +
-        '<p>Showing at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> <br>' +
+        '<p>Showing <b>' + movieName + '</b> at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> <br>' +
         ' <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
         '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
         'Travel Time: <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> | ' +
