@@ -28,6 +28,10 @@ class MapController < ApplicationController
     @year = @parsed_json['releaseYear']
     @runtime = @parsed_json['runTime']
 
+    @displayTime = @runtime.gsub('PT','')
+    @displayTime = @displayTime.gsub('H', ' hour ')
+    @displayTime = @displayTime.gsub('M', ' minutes')
+
     render "map"
   end
 

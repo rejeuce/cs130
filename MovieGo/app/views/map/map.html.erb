@@ -8,9 +8,7 @@
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <style>
-      #map {
-        height: 75%;
-      }
+
       html, body {
         height: 100%;
         margin: 0;
@@ -21,12 +19,52 @@
         font-weight: bold;
         cursor: pointer;
       }
+
+        .movie-info {
+          margin-left: 15px;
+        }
+
     </style>
   </head>
   <body>
-  <h2 style="color:black;">
+
+  <!-- <h2 style="color:black;">
   Theaters showing <i><%= @title %></i>
-  </h2>
+  </h2> -->
+  
+  <div id="mySidenav" class="sidenav">
+    <!-- <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a> -->
+
+
+    <div id="content">
+      <h1 class="movie-info" style="color:white;"> <%= @title %></h1>
+      <div id="bodyContent">
+        <p class="movie-info">
+          <span style="border: 1px solid white"> <%= @rating %> </span>
+            <%= @year %> |
+
+            <% if (@genres != nil) then %>
+              <%@genres.each_with_index do |genre, index| %>
+                <%= if(index == @genres.size - 1) then genre
+                    else genre + ' /'
+                    end %>
+              <% end %>
+            <% end %>
+
+          | <%= @displayTime %>
+        </p>
+
+        <p class="movie-info"><i><%= @description %></i></p>
+
+    </div>
+  </div>
+
+
+  </div>
+
+  <!-- Use any element to open the sidenav -->
+  <!-- <span onclick="openNav()">open</span> -->
+
   <div id="map"></div>
   <script>
 
@@ -106,33 +144,17 @@
 
     function getInfoWindowHTML(timeRemaining, theatreName, theaterCoords, showtimehr, showtimemin, tickets) {
       var movieName = '<%= @title %>';
-      var rating = '<%= @rating %>';
-      var year = '<%= @year %>';
-      var genre = '<%= raw @genres.to_json %>';
-      genre = JSON.parse(genre);
-      var runtime = '<%= @runtime %>';
-      runtime = runtime.replace("PT", "");
-      runtime = runtime.replace("H", " hours ");
-      runtime = runtime.replace("M", " minutes");
-      var description = '<%= @description %>';
 
       if (showtimehr >= 13)
         showtimehr -= 12;
 
       var content = '<div id="content">' +
-      '<h1 style="color:black;">' + movieName + '</h1>' +
       '<div id="bodyContent">' +
-      '<p><span style="border: 1px solid grey">' + rating + '</span> ' + 
-      "  " + year + " | " +
-      genre.join("/") + " | " +
-      runtime +
-      '</p>' +
       '<p>Showing at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> | <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
       '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
       'Right now, it would take you <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> to get there | ' +
       '<span class="fake-link" id="direct' + theatreName.split(" ").join("") + '">Get Directions!</span></p>' +
       '<div style="margin-top=50px; margin-bottom=50px;" id="rightpanel' + theatreName.split(" ").join("") + '"></div>' +
-      '<p><i>' + description + "</i></p>" +
       '</div>' +
       '</div>';
       console.log(content);
@@ -356,6 +378,21 @@
       var coords = {lat: userLatitude, lng: userLongitude};
       drawMap(coords);
     }
+
+
+    /* For Side Panel*/
+/*
+function openNav() {
+    document.getElementById("mySidenav").style.width = "400px";
+    document.getElementById("map").style.marginRight = "420px";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("map").style.marginRight= "20px";
+}
+
+*/
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap&libraries=places" async defer></script>
   </body>
