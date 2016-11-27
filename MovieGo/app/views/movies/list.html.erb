@@ -10,6 +10,12 @@
 
 </head>
 
+<style>
+  button:focus {
+    outline:0;
+  }
+</style>
+
 <%= render 'shared/header' %>
 <%= render 'shared/navigation' %>
 
@@ -174,7 +180,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       if (imgsrc == undefined)
         imgsrc = "assets/posters/smallberg.jpg"
-      
+
       movieData += '<form method="post" action="map" class="inline">';
       movieData += '<input name="authenticity_token" type="hidden" value="' + AUTH_TOKEN + '">';
       movieData += '<input type="hidden" name="movie_info" value="' + encodeURIComponent(getMovieInfo(index)) + '">';
