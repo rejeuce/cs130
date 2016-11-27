@@ -187,7 +187,12 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       movieData += '<button type="submit" class="link_button">'; //onclick="getMovieInfo(' + index + ')">'
 
-      movieData += '<div class="card"><img class="card-img-top index-img" src="' + imgsrc + '"><br/>';
+      movieData += '<div class="card card-inverse"><img class="card-img-top index-img" src="' + imgsrc + '"><br/>';
+
+      if (movie.title.includes("3D"))
+        movieData += '<img style="position:absolute; top:10px; left:10px;" src="assets/3d.jpg" height="42" width="42">'
+
+//      movieData += '<div class="card-img-overlay"> <h4 class="card-title">Card title</h4></div>'
 
       movieData += "</div>";
       movieData += "</button>";
