@@ -30,9 +30,11 @@
         <%= @year %> |
 
         <% if (@genres != nil) then %>
-            <%@genres.each_with_index do |genre, index| %>
-                <%= if(index == @genres.size - 1) then genre
-                    else genre + ' /'
+            <% @genres.each_with_index do |genre, index| %>
+                <%= if (index == @genres.size - 1) then
+                      genre
+                    else
+                      genre + ' /'
                     end %>
             <% end %>
         <% end %>
@@ -65,15 +67,15 @@
   var TIMER_STORAGE = {};
 
   /*
-  var ALL_INFO_WINDOWS = [];
-  var ALL_MARKERS = [];
-  */
+   var ALL_INFO_WINDOWS = [];
+   var ALL_MARKERS = [];
+   */
 
   function startTimer(duration, display) {
     var timer = duration;
     var minutes, seconds;
 
-    return setInterval(function() {
+    return setInterval(function () {
       minutes = parseInt(timer / 60, 10);
       seconds = parseInt(timer % 60, 10);
 
@@ -82,20 +84,19 @@
 
       display.textContent = minutes + ":" + seconds;
 
-      if (--timer < 0 ){
+      if (--timer < 0) {
         timer = duration;
       }
 
     }, 1000);
   }
 
-
   function getTimeToArrival(origin, destination, etaElement, timeRemaining) {
     DISTANCE_SERVICE.getDistanceMatrix({
       origins: [origin],
       destinations: [destination],
       travelMode: 'DRIVING'
-    }, function(response, status) {
+    }, function (response, status) {
       if (status === 'OK') {
         var origins = response.originAddresses;
 
@@ -127,7 +128,7 @@
       origin: origin,
       destination: destination,
       travelMode: 'DRIVING'
-    }, function(response, status) {
+    }, function (response, status) {
       if (status === 'OK') {
         directionsDisplay.setDirections(response);
       } else {
@@ -144,7 +145,7 @@
 
     var content = '<div id="content">' +
         '<div id="bodyContent">' +
-        '<p>Showing at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> <br>' +
+        '<p>Showing <b>' + movieName + '</b> at <b>' + theatreName + '</b> at <b>' + showtimehr + ":" + showtimemin + '</b> <br>' +
         ' <a href="' + tickets + '" target="_blank" style="color: green; font-weight: bold;"> Buy Tickets Now!</a>' + '</p>' +
         '<p>Time Remaining: <b><span id="timer' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span> minutes </b> <br/> ' +
         'Travel Time: <b><span id="eta' + theatreName.split(" ").join("") + '"> </span></b> | ' +
@@ -226,41 +227,41 @@
       });
 
       /*
-      // Infowindow to show just the timer.
-      var timerwindow = new google.maps.InfoWindow({
-        content: '<div><p><b><span id="timer1' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span></b></p><div>'
-      });
+       // Infowindow to show just the timer.
+       var timerwindow = new google.maps.InfoWindow({
+       content: '<div><p><b><span id="timer1' + theatreName.split(" ").join("") + '">' + timeRemaining + ':00</span></b></p><div>'
+       });
 
-      // store the timerwindows so that we can close/open them again later.
-      timerwindow.open(map, marker);
-      ALL_INFO_WINDOWS.push(timerwindow);
-      ALL_MARKERS.push(marker);
+       // store the timerwindows so that we can close/open them again later.
+       timerwindow.open(map, marker);
+       ALL_INFO_WINDOWS.push(timerwindow);
+       ALL_MARKERS.push(marker);
 
-      // function to allow the timer to tick on view
-      var timer = document.querySelector("#timer1" + theatreName.split(" ").join(""));
-      startTimer(timeRemaining * 60, timer);
+       // function to allow the timer to tick on view
+       var timer = document.querySelector("#timer1" + theatreName.split(" ").join(""));
+       startTimer(timeRemaining * 60, timer);
 
-      */
+       */
 
       // infowindow is the Infowindow that shows up when a theater is directly clicked on.
       var infowindow = new google.maps.InfoWindow({
         content: getInfoWindowHTML(timeRemaining, theatreName, coords, showtimehr, showtimemin, tickets)
       });
 
-      marker.addListener('click', function() {
+      marker.addListener('click', function () {
 
         /*
-        // Close all timer infowindows.
-        for(var i = 0; i < ALL_INFO_WINDOWS.length; i++) {
-          ALL_INFO_WINDOWS[i].close();
-        }
-        */
+         // Close all timer infowindows.
+         for(var i = 0; i < ALL_INFO_WINDOWS.length; i++) {
+         ALL_INFO_WINDOWS[i].close();
+         }
+         */
 
         infowindow.open(map, marker);
 
         var display = document.querySelector("#timer" + theatreName.split(" ").join(""));
         var directionsButton = document.querySelector("#direct" + theatreName.split(" ").join(""));
-        directionsButton.addEventListener('click', function() {
+        directionsButton.addEventListener('click', function () {
 
           // Replace the description in the sidebar with the directions to movie.
           document.getElementById("movie-description").style.display = "none";
@@ -277,16 +278,16 @@
         getTimeToArrival(USER_LOCATION, coords, etaDisplay, timeRemaining);
       });
 
-      infowindow.addListener('closeclick', function() {
+      infowindow.addListener('closeclick', function () {
         console.log("close window");
         infowindow.close();
 
         /*
-        // reopen all timer windows
-        for(var i = 0; i < ALL_INFO_WINDOWS.length; i++) {
-          ALL_INFO_WINDOWS[i].open(map, ALL_MARKERS[i]);
-        }
-        */
+         // reopen all timer windows
+         for(var i = 0; i < ALL_INFO_WINDOWS.length; i++) {
+         ALL_INFO_WINDOWS[i].open(map, ALL_MARKERS[i]);
+         }
+         */
 
         // if needed, switch back the description in the side panel.
         document.getElementById("movie-description").style.display = "block";
@@ -399,14 +400,6 @@
     addTheatresToMap(map, showtimes, 0, alreadyAdded);
   }
 
-
-  function getUserLocation() {
-    // get the user location from the map controller
-    var userLocation = '<%= @location %>';
-    console.log("User Location: " + userLocation);
-
-  }
-
   function initMap() {
     // center the map location on the user's location
     // use the users location as the map center
@@ -421,16 +414,16 @@
   /* For Side Panel*/
 
   /*
-  function openNav() {
-    document.getElementById("mySidenav").style.width = "400px";
-    document.getElementById("map").style.marginRight = "420px";
-  }
+   function openNav() {
+   document.getElementById("mySidenav").style.width = "400px";
+   document.getElementById("map").style.marginRight = "420px";
+   }
 
-  function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-    document.getElementById("map").style.marginRight= "20px";
-  }
-*/
+   function closeNav() {
+   document.getElementById("mySidenav").style.width = "0";
+   document.getElementById("map").style.marginRight= "20px";
+   }
+   */
 
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWeRVSSqyWviphBYAymUc31B2cfeZpY6A&callback=initMap&libraries=places" async defer></script>

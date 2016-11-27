@@ -7,7 +7,6 @@
   <%= csrf_meta_tag %>
 
 
-
 </head>
 
 <%= render 'shared/header' %>
@@ -16,46 +15,62 @@
 <body>
 
 <div class="location-center" style="width:500px;">
-  <p style="display:inline; margin-right:10px; color:black;">Find Movies Near You:</p>
-  <p style="display:inline; color:black;"><input class="location-input" type="text" id="address" value="" placeholder="Zip/Address/City">
-    <button class="search-button" onclick="convertAddress()">Search</button>
+  <p style="display:inline; margin-right:10px; color:black;">Movies Near You:</p>
+  <p style="display:inline; color:black;">
+    <input class="location-input" type="text" id="address" value="" placeholder="Zip/Address/City">
+    <button class="search-button" onclick="convertAddress(false)">Search</button>
   </p>
 
 </div>
 
-<p class="location-center" style="margin-top: 10px; width: 230px;">
-  <button class="location-button" onclick="getLocation()">Use My Location</button>
+<div class="location-center" style="width:500px; padding-top: 20px;">
+
+<p class="location-center" style="margin: 20px; width: 230px; display: inline;">
+  <button class="location-button" onclick="getLocation(false)">Use My Location</button>
 </p>
+<p class="location-center" style="margin: 0px; width: 230px; display: inline;">
+  <button class="location-button" onclick="getRecommendation()">Recommendation</button>
+</p>
+
+</div>
 
 <hr>
 
 <script>
-  function getLocation() {
+  function getLocation(recommend) {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(showPosition);
+      navigator.geolocation.getCurrentPosition(function (position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+        console.log("User Coordinates: " + lat + ", " + lng);
+        httpGetAsync(lat, lng, recommend);
+      });
     } else {
       alert("Geolocation is not supported by this browser.");
     }
   }
-  function showPosition(position) {
-    var x;
-    var lat = position.coords.latitude;
-    var lng = position.coords.longitude;
-    console.log("User Coordinates: " + lat + ", " + lng);
-    httpGetAsync(lat, lng);
-  }
-  function convertAddress() {
+
+  function convertAddress(recommend) {
     var address = document.getElementById("address").value;
+
     var geocoder = new google.maps.Geocoder();
-    var x;
     geocoder.geocode({'address': address}, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var lat = results[0].geometry.location.lat();
         var lng = results[0].geometry.location.lng();
         console.log("User Coordinates: " + lat + ", " + lng);
-        httpGetAsync(lat, lng);
+        httpGetAsync(lat, lng, recommend);
       }
     });
+  }
+
+  function getRecommendation() {
+    var address = document.getElementById("address").value;
+    console.log(address);
+    if (address)
+      convertAddress(true);
+    else
+      getLocation(true);
   }
 </script>
 
@@ -88,44 +103,20 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   thumbnails["Almost Christmas"] = "assets/posters/almostchristmas.jpg"
   thumbnails["Allied"] = "assets/posters/allied.jpg"
 
-
   var RESPONSE_INFO = "";
 
-  function makePostRequest(payload) {
-
-    console.log("Payload: " + payload);
-    $.ajax({
-      beforeSend: function (xhr) {
-        xhr.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'))
-      },
-      url: 'map',
-      type: 'POST',
-      data: JSON.stringify(payload),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      async: true,
-      success: function (msg) {
-        window.location.href = "/map";
-        //alert(msg);
-      }
-    });
-  }
-
   function getMovieInfo(movie_index) {
-    console.log("Movie Index: " + movie_index);
     var result = JSON.parse(RESPONSE_INFO);
     var movieInfo = result[movie_index];
 
-    console.log("Movie Title: " + result[movie_index].title);
-
-    //makePostRequest(JSON.stringify(movieInfo));
+    console.log(movie_index + " Movie: " + result[movie_index].rootId + ", " + result[movie_index].title);
     return JSON.stringify(movieInfo);
   }
 
-
   function GET_REQUEST_URL(lat, lng) {
 //    var API_KEY = "ghbb64hj9th6yfu9dp8e6k4w";
-    //var API_KEY = "un3bsktad33mj4s4tzpaym3u";
+//    var API_KEY = "un3bsktad33mj4s4tzpaym3u";
+//    var API_KEY = "xmf8jaxmdfpucq8pqmt46xn6";
     var API_KEY = "97s85qqav27xqnj6t3rfbnxj";
     var BASE_URL = "http://data.tmsapi.com/v1.1/movies/showings?startDate=";
 
@@ -177,9 +168,10 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
       movieData += '<input type="hidden" name="latitude" value="' + lat + '">';
       movieData += '<input type="hidden" name="longitude" value="' + lng + '">';
+      movieData += '<input type="hidden" name="recommend" value="false">';
       movieData += '<input type="hidden" name="movie_image" value="' + imgsrc + '">';
 
-      movieData += '<button type="submit" class="link_button">' //onclick="getMovieInfo(' + index + ')">'
+      movieData += '<button type="submit" class="link_button">'; //onclick="getMovieInfo(' + index + ')">'
 
       movieData += '<div class="tile"><img style="height: 300px; width: 200px; object-fit: contain" src="' + imgsrc + '"><br/>';
 
@@ -195,17 +187,89 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 //    console.log(showtimes);
   }
 
-  function httpGetAsync(lat, lng) {
+  function displayRecommendation(showtimes, lat, lng) {
+    console.log("Recommendation");
+
+    var result = JSON.parse(showtimes);
+    var INDEX = 0;
+
+    // assign response to global variable, so we can access movie information
+    // after a button click
+    RESPONSE_INFO = showtimes;
+    var AUTH_TOKEN = $('meta[name=csrf-token]').attr('content');
+
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "map");
+
+    var hiddenField;
+
+    // auth token
+    hiddenField= document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "authenticity_token");
+    hiddenField.setAttribute("value", AUTH_TOKEN);
+    form.appendChild(hiddenField);
+
+    // movie info
+    hiddenField= document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "movie_info");
+    hiddenField.setAttribute("value", encodeURIComponent(getMovieInfo(INDEX)));
+    form.appendChild(hiddenField);
+
+    // latitude
+    hiddenField= document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "latitude");
+    hiddenField.setAttribute("value", lat);
+    form.appendChild(hiddenField);
+
+    // longitude
+    hiddenField = document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "longitude");
+    hiddenField.setAttribute("value", lng);
+    form.appendChild(hiddenField);
+
+    // recommend
+    hiddenField = document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "recommend");
+    hiddenField.setAttribute("value", "true");
+    form.appendChild(hiddenField);
+
+    // image
+    var result = JSON.parse(RESPONSE_INFO);
+    var movie = result[INDEX];
+    var imgsrc = thumbnails[movie.title];
+    if (imgsrc == undefined)
+      imgsrc = "assets/smallberg.jpg";
+
+    hiddenField = document.createElement("input");
+    hiddenField.setAttribute("type", "hidden");
+    hiddenField.setAttribute("name", "movie_image");
+    hiddenField.setAttribute("value", imgsrc);
+    form.appendChild(hiddenField);
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  function httpGetAsync(lat, lng, recommend) {
     console.log("hi!");
     var url = GET_REQUEST_URL(lat, lng);
     var callback = displayMovieShowtimes;
     var xmlHttp = new XMLHttpRequest();
 
+    if (recommend)
+      callback = displayRecommendation;
+
     xmlHttp.onreadystatechange = function () {
       if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
         callback(xmlHttp.responseText, lat, lng);
       }
-    }
+    };
     xmlHttp.open("GET", url, true);
     xmlHttp.send(null);
   }
