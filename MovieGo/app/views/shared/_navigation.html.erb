@@ -11,7 +11,9 @@
         <%= link_to "Movies", movies_path, class: "nav-link" %>
       </li>
       <li class="nav-item">
-        <%= link_to "Login", "/auth/facebook",id:"sign_in" class: "nav-link" %>
+        <% if current_user %>
+          <%= link_to "Sign Out",signout_path,id:"sign_out",class: "nav-link" %>
+        <% end %>
       </li>
     </ul>
   </div>
