@@ -12,19 +12,23 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
                    headers: { 'content-type': 'image/jpg' })
   end
 
-  test 'populate created image successfully' do
-     setup_webstub
-    # @image = Image.create!(url: @url)
-    # get :show, id: @image.id
-    # assert_response :success
-    get "/home"
-    assert_select "button","Try It"
-
+  test 'populated html successfully' do
+    setup_webstub
+    get "/"
+    assert_select "a","About"
   end
 
   test "should get home" do
-    get home_home_url
+    get home_landing_url
     assert_response :success
+  end
+
+  test 'tem' do
+    setup_webstub
+    # @image = Image.create!(url: @url)
+    # get :show, id: @image.id
+    # assert_response :success
+
   end
 
 end
