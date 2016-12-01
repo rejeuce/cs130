@@ -173,7 +173,7 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
       var imgsrc = thumbnails[movie.title];
 
       if (imgsrc == undefined)
-        imgsrc = "assets/posters/smallberg.jpg"
+        imgsrc = "assets/posters/blk_320_480.jpg"
 
 
       movieData += '<form method="post" action="map" class="inline">';
@@ -192,7 +192,8 @@ src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
       if (movie.title.includes("3D"))
         movieData += '<img style="position:absolute; top:10px; left:10px;" src="assets/3d.jpg" height="42" width="42">'
 
-//      movieData += '<div class="card-img-overlay"> <h4 class="card-title">Card title</h4></div>'
+      if (imgsrc == "assets/posters/blk_320_480.jpg")
+        movieData += '<h3 style="font-size: 2em; font-family:Tangerine; position:absolute; top:200px; width:100%; text-align:center; color: white;">' + movie.title + '</h4></div>'
 
       movieData += "</div>";
       movieData += "</button>";
