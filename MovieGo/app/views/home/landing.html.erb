@@ -26,16 +26,9 @@
                 <% end %>
               </div>
               
-              <% if current_user %>
               <div class="col-xs-4 text-left wow fadeInUp" data-wow-delay="1.8s">
                   <%= link_to "Go", movies_path, class: "btn btn-secondary btn-lg" %>
               </div>
-
-              <% else %>
-                <div class="col-xs-4 text-left wow fadeInUp" data-wow-delay="1.8s">
-                  <%= link_to "Go", movies_path, class: "btn btn-secondary btn-lg disabled" %>
-                </div>
-              <% end %>
 
             </div><!--End Button Row-->
           </div>
